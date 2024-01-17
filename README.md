@@ -8,79 +8,91 @@ Borsher wraps the [borsh-js](https://github.com/near/borsh-js) and simplifies th
 import { BorshSchema, borshSerialize, borshDeserialize, PhantomData } from 'borsher';
 ```
 
-### Primitive type
+### u8
 ```ts
 const n: number = 100;
 
 const buffer = borshSerialize(BorshSchema.u8, n);
 ```
 
+### u16
 ```ts
 const n: number = 100;
 
 const buffer = borshSerialize(BorshSchema.u16, n);
 ```
 
+### u32
 ```ts
 const n: number = 100;
 
 const buffer = borshSerialize(BorshSchema.u32, n);
 ```
 
+### u64
 ```ts
 const n: bigint = 100n;
 
 const buffer = borshSerialize(BorshSchema.u64, n);
 ```
 
+### u128
 ```ts
 const n: bigint = 100n;
 
 const buffer = borshSerialize(BorshSchema.u128, n);
 ```
 
+### i8
 ```ts
 const n: number = 100;
 
 const buffer = borshSerialize(BorshSchema.i8, n);
 ```
 
+### i16
 ```ts
 const n: number = 100;
 
 const buffer = borshSerialize(BorshSchema.i16, n);
 ```
 
+### i32
 ```ts
 const n: number = 100;
 
 const buffer = borshSerialize(BorshSchema.i32, n);
 ```
 
+### i64
 ```ts
 const n: bigint = 100n;
 
 const buffer = borshSerialize(BorshSchema.i64, n);
 ```
 
+### i128
 ```ts
 const n: bigint = 100n;
 
 const buffer = borshSerialize(BorshSchema.i128, n);
 ```
 
+### f32
 ```ts
 const n: number = 1.0;
 
 const buffer = borshSerialize(BorshSchema.f32, n);
 ```
 
+### f64
 ```ts
 const n: number = 1.0;
 
 const buffer = borshSerialize(BorshSchema.f64, n);
 ```
 
+### bool
 ```ts
 const b: boolean = true;
 
@@ -94,7 +106,7 @@ const message: string = 'hello world';
 const buffer = borshSerialize(BorshSchema.String, message);
 ```
 
-### Fixed length array
+### Array
 ```ts
 const schema = BorshSchema.Array(BorshSchema.String, 2);
 
@@ -103,7 +115,7 @@ const messages: string[] = ['hello', 'world'];
 const buffer = borshSerialize(schema, messages);
 ```
 
-### Non-fixed length array
+### Vec
 ```ts
 const schema = BorshSchema.Vec(BorshSchema.String);
 
@@ -112,7 +124,7 @@ const messages: string[] = ['hello', 'world'];
 const buffer = borshSerialize(schema, messages);
 ```
 
-### Non-fixed length set
+### HashSet
 ```ts
 const schema = BorshSchema.HashSet(BorshSchema.String);
 
@@ -121,7 +133,7 @@ const messages: Set<string> = new Set(['hello', 'world']);
 const buffer = borshSerialize(schema, messages);
 ```
 
-### Non-fixed length map
+### HashMap
 ```ts
 const schema = BorshSchema.HashMap(BorshSchema.String, BorshSchema.u128);
 
@@ -144,14 +156,14 @@ const someBuffer = borshSerialize(schema, some);
 const noneBuffer = borshSerialize(schema, none);
 ```
 
-### Nothing
+### PhantomData
 ```ts
 const nothing: PhantomData = {};
 
 const buffer = borshSerialize(BorshSchema.PhantomData, nothing);
 ```
 
-### Custom struct
+### Struct
 ```ts
 interface Person {
   name: string;
@@ -173,7 +185,7 @@ const person: Person = {
 const buffer = borshSerialize(schema, person);
 ```
 
-### Custom enum
+### Enum
 ```ts
 type Shape =
   | {

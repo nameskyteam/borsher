@@ -35,8 +35,6 @@ export class BorshSchema {
     return this.schema;
   }
 
-  // -------------------------------------- primitive -------------------------------------
-
   /**
    * Schema for u8.
    * @example
@@ -180,10 +178,8 @@ export class BorshSchema {
     return BorshSchema.from('bool');
   }
 
-  // -------------------------------------- string ----------------------------------------
-
   /**
-   * Schema for string.
+   * Schema for String.
    * @example
    * const message: string = 'hello world';
    *
@@ -196,7 +192,7 @@ export class BorshSchema {
   // --------------------------------------- collection -----------------------------------
 
   /**
-   * Schema for fixed length array.
+   * Schema for Array.
    * @example
    * const schema = BorshSchema.Array(BorshSchema.String, 2);
    *
@@ -211,7 +207,7 @@ export class BorshSchema {
   }
 
   /**
-   * Schema for non-fixed length array.
+   * Schema for Vec.
    * @example
    * const schema = BorshSchema.Vec(BorshSchema.String);
    *
@@ -225,7 +221,7 @@ export class BorshSchema {
   }
 
   /**
-   * Schema for non-fixed length set.
+   * Schema for HashSet.
    * @example
    * const schema = BorshSchema.HashSet(BorshSchema.String);
    *
@@ -239,7 +235,7 @@ export class BorshSchema {
   }
 
   /**
-   * Schema for non-fixed length map.
+   * Schema for HashMap.
    * @example
    * const schema = BorshSchema.HashMap(BorshSchema.String, BorshSchema.u128);
    *
@@ -259,7 +255,7 @@ export class BorshSchema {
   // -------------------------------------- option ----------------------------------------
 
   /**
-   * Schema for optional value.
+   * Schema for Option.
    * @example
    * const schema = BorshSchema.Option(BorshSchema.String);
    *
@@ -277,7 +273,7 @@ export class BorshSchema {
   // -------------------------------------- nothing ---------------------------------------
 
   /**
-   * Schema for nothing.
+   * Schema for PhantomData.
    * @example
    * const nothing: PhantomData = {};
    *
@@ -287,10 +283,8 @@ export class BorshSchema {
     return BorshSchema.Struct({});
   }
 
-  // --------------------------------------- custom ---------------------------------------
-
   /**
-   * Schema for custom struct.
+   * Schema for Struct.
    * @example
    * interface Person {
    *   name: string;
@@ -322,7 +316,7 @@ export class BorshSchema {
   }
 
   /**
-   * Schema for custom enum.
+   * Schema for Enum.
    * @example
    * type Shape =
    *   | {
