@@ -10,7 +10,7 @@ yarn add borsher
 
 ## Usage
 ```ts
-import { BorshSchema, borshSerialize, borshDeserialize, PhantomData } from 'borsher';
+import { BorshSchema, borshSerialize, borshDeserialize, Unit } from 'borsher';
 ```
 
 ### u8
@@ -161,11 +161,11 @@ const someBuffer = borshSerialize(schema, some);
 const noneBuffer = borshSerialize(schema, none);
 ```
 
-### PhantomData
+### Unit
 ```ts
-const nothing: PhantomData = {};
+const unit: Unit = {};
 
-const buffer = borshSerialize(BorshSchema.PhantomData, nothing);
+const buffer = borshSerialize(BorshSchema.Unit, unit);
 ```
 
 ### Struct
@@ -194,7 +194,7 @@ const buffer = borshSerialize(schema, person);
 ```ts
 type Shape =
   | {
-      Any: PhantomData;
+      Any: Unit;
     }
   | {
       Square: number;
@@ -211,10 +211,10 @@ type Shape =
       };
     };
 
-const { Enum, Struct, PhantomData, u32 } = BorshSchema;
+const { Enum, Struct, Unit, u32 } = BorshSchema;
 
 const schema = Enum({
-  Any: PhantomData,
+  Any: Unit,
   Square: u32,
   Rectangle: Struct({
     length: u32,

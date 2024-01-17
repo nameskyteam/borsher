@@ -12,14 +12,8 @@ export interface EnumVariants {
   [k: string]: BorshSchema;
 }
 
-/**
- * Empty interface
- */
-export interface PhantomData {}
+export interface Unit {}
 
-/**
- * Schema used for borsh (de)serialization.
- */
 export class BorshSchema {
   private readonly schema: borsh.Schema;
 
@@ -189,8 +183,6 @@ export class BorshSchema {
     return BorshSchema.from('string');
   }
 
-  // --------------------------------------- collection -----------------------------------
-
   /**
    * Schema for Array.
    * @example
@@ -252,8 +244,6 @@ export class BorshSchema {
     return BorshSchema.from({ map: { key: k.into(), value: v.into() } });
   }
 
-  // -------------------------------------- option ----------------------------------------
-
   /**
    * Schema for Option.
    * @example
@@ -270,16 +260,14 @@ export class BorshSchema {
     return BorshSchema.from({ option: v.into() });
   }
 
-  // -------------------------------------- nothing ---------------------------------------
-
   /**
-   * Schema for PhantomData.
+   * Schema for Unit.
    * @example
-   * const nothing: PhantomData = {};
+   * const unit: Unit = {};
    *
-   * const buffer = borshSerialize(BorshSchema.PhantomData, nothing);
+   * const buffer = borshSerialize(BorshSchema.Unit, unit);
    */
-  static get PhantomData(): BorshSchema {
+  static get Unit(): BorshSchema {
     return BorshSchema.Struct({});
   }
 
@@ -320,7 +308,7 @@ export class BorshSchema {
    * @example
    * type Shape =
    *   | {
-   *       Any: PhantomData;
+   *       Any: Unit;
    *     }
    *   | {
    *       Square: number;
@@ -337,10 +325,10 @@ export class BorshSchema {
    *       };
    *     };
    *
-   * const { Enum, Struct, PhantomData, u32 } = BorshSchema;
+   * const { Enum, Struct, Unit, u32 } = BorshSchema;
    *
    * const schema = Enum({
-   *   Any: PhantomData,
+   *   Any: Unit,
    *   Square: u32,
    *   Rectangle: Struct({
    *     length: u32,
