@@ -163,7 +163,7 @@ const noneBuffer = borshSerialize(schema, none);
 
 ### Unit
 ```ts
-const unit: Unit = {};
+const unit: {} = {};
 
 const buffer = borshSerialize(BorshSchema.Unit, unit);
 ```
@@ -175,11 +175,9 @@ interface Person {
   age: number;
 }
 
-const { Struct, String, u8 } = BorshSchema;
-
-const schema = Struct({
-  name: String,
-  age: u8
+const schema = BorshSchema.Struct({
+  name: BorshSchema.String,
+  age: BorshSchema.u8
 });
 
 const person: Person = {
@@ -192,10 +190,34 @@ const buffer = borshSerialize(schema, person);
 
 ### Enum
 ```ts
-type Shape =
+// enum without associated value
+type Status = 
   | {
-      Any: Unit;
+      Pending: {};
     }
+  | {
+      Filled: {};
+    }
+  | {
+      Cancelled: {};
+    };
+
+const schema = BorshSchema.Enum({
+  Pending: BorshSchema.Unit,
+  Filled: BorshSchema.Unit,
+  Cancelled: BorshSchema.Unit,
+});
+
+const status: Status = {
+  Pending: {}
+};
+
+const buffer = borshSerialize(schema, status);
+```
+
+```ts
+// enum with associated value
+type Shape =
   | {
       Square: number;
     }
@@ -211,26 +233,20 @@ type Shape =
       };
     };
 
-const { Enum, Struct, Unit, u32 } = BorshSchema;
-
-const schema = Enum({
-  Any: Unit,
-  Square: u32,
-  Rectangle: Struct({
-    length: u32,
-    width: u32
+const schema = BorshSchema.Enum({
+  Square: BorshSchema.u32,
+  Rectangle: BorshSchema.Struct({
+    length: BorshSchema.u32,
+    width: BorshSchema.u32
   }),
-  Circle: Struct({
-    radius: u32
+  Circle: BorshSchema.Struct({
+    radius: BorshSchema.u32
   })
 });
 
-const rectangle: Shape = {
-  Rectangle: {
-    length: 5,
-    width: 4
-  }
+const shape: Shape = {
+  Square: 5
 };
 
-const buffer = borshSerialize(schema, rectangle);
+const buffer = borshSerialize(schema, shape);
 ```

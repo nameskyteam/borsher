@@ -1,5 +1,5 @@
 import { Buffer } from 'buffer';
-import { BorshSchema, Unit, EnumVariants, StructFields } from './BorshSchema';
+import { BorshSchema, EnumVariants, StructFields } from './BorshSchema';
 import * as borsh from 'borsh';
 
 function borshSerialize<T>(schema: BorshSchema, data: T): Buffer {
@@ -10,4 +10,4 @@ function borshDeserialize<T>(schema: BorshSchema, buffer: Uint8Array): T {
   return borsh.deserialize(schema.into(), buffer) as T;
 }
 
-export { borshSerialize, borshDeserialize, BorshSchema, Unit, EnumVariants, StructFields };
+export { borshSerialize, borshDeserialize, BorshSchema, EnumVariants, StructFields };

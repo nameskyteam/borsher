@@ -12,8 +12,6 @@ export interface EnumVariants {
   [k: string]: BorshSchema;
 }
 
-export interface Unit {}
-
 export class BorshSchema {
   private readonly schema: borsh.Schema;
 
@@ -263,7 +261,7 @@ export class BorshSchema {
   /**
    * Schema for Unit.
    * @example
-   * const unit: Unit = {};
+   * const unit: {} = {};
    *
    * const buffer = borshSerialize(BorshSchema.Unit, unit);
    */
@@ -279,11 +277,9 @@ export class BorshSchema {
    *   age: number;
    * }
    *
-   * const { Struct, String, u8 } = BorshSchema;
-   *
-   * const schema = Struct({
-   *   name: String,
-   *   age: u8
+   * const schema = BorshSchema.Struct({
+   *   name: BorshSchema.String,
+   *   age: BorshSchema.u8
    * });
    *
    * const person: Person = {
@@ -306,10 +302,32 @@ export class BorshSchema {
   /**
    * Schema for Enum.
    * @example
-   * type Shape =
+   * // enum without associated value
+   * type Status =
    *   | {
-   *       Any: Unit;
+   *       Pending: {};
    *     }
+   *   | {
+   *       Filled: {};
+   *     }
+   *   | {
+   *       Cancelled: {};
+   *     };
+   *
+   * const schema = BorshSchema.Enum({
+   *   Pending: BorshSchema.Unit,
+   *   Filled: BorshSchema.Unit,
+   *   Cancelled: BorshSchema.Unit,
+   * });
+   *
+   * const status: Status = {
+   *   Pending: {}
+   * };
+   *
+   * const buffer = borshSerialize(schema, status);
+   * @example
+   * // enum with associated value
+   * type Shape =
    *   | {
    *       Square: number;
    *     }
@@ -325,28 +343,22 @@ export class BorshSchema {
    *       };
    *     };
    *
-   * const { Enum, Struct, Unit, u32 } = BorshSchema;
-   *
-   * const schema = Enum({
-   *   Any: Unit,
-   *   Square: u32,
-   *   Rectangle: Struct({
-   *     length: u32,
-   *     width: u32
+   * const schema = BorshSchema.Enum({
+   *   Square: BorshSchema.u32,
+   *   Rectangle: BorshSchema.Struct({
+   *     length: BorshSchema.u32,
+   *     width: BorshSchema.u32
    *   }),
-   *   Circle: Struct({
-   *     radius: u32
+   *   Circle: BorshSchema.Struct({
+   *     radius: BorshSchema.u32
    *   })
    * });
    *
-   * const rectangle: Shape = {
-   *   Rectangle: {
-   *     length: 5,
-   *     width: 4
-   *   }
+   * const shape: Shape = {
+   *   Square: 5
    * };
    *
-   * const buffer = borshSerialize(schema, rectangle);
+   * const buffer = borshSerialize(schema, shape);
    * @param variants Enum variants
    */
   static Enum(variants: EnumVariants): BorshSchema {
