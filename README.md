@@ -10,7 +10,7 @@ yarn add borsher
 
 ## Usage
 ```ts
-import { BorshSchema, borshSerialize, borshDeserialize, Unit } from 'borsher';
+import { BorshSchema, borshSerialize, borshDeserialize } from 'borsher';
 ```
 
 ### u8
