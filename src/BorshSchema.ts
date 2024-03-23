@@ -1,11 +1,23 @@
 import * as borsh from 'borsh';
 import { StructType } from 'borsh/lib/types/types';
 
-type StructFieldsInternal = StructType['struct'];
+export type Unit = {
+  [k: string]: never;
+};
 
-type EnumVariantsInternal = StructType[];
+export type StructFields = {
+  [k: string]: BorshSchema;
+};
 
-type BorshSchemaInternal =
+export type EnumVariants = {
+  [k: string]: BorshSchema;
+};
+
+type InternalStructFields = StructType['struct'];
+
+type InternalEnumVariants = StructType[];
+
+type EnumerableBorshSchema =
   | { kind: 'u8' }
   | { kind: 'u16' }
   | { kind: 'u32' }
@@ -20,30 +32,18 @@ type BorshSchemaInternal =
   | { kind: 'f64' }
   | { kind: 'bool' }
   | { kind: 'String' }
-  | { kind: 'Array'; value: BorshSchema; length: number }
-  | { kind: 'Vec'; value: BorshSchema }
-  | { kind: 'HashSet'; value: BorshSchema }
-  | { kind: 'HashMap'; key: BorshSchema; value: BorshSchema }
-  | { kind: 'Option'; value: BorshSchema }
-  | { kind: 'Struct'; fields: StructFields }
-  | { kind: 'Enum'; variants: EnumVariants };
-
-export type StructFields = {
-  [k: string]: BorshSchema;
-};
-
-export type EnumVariants = {
-  [k: string]: BorshSchema;
-};
-
-export type Unit = {
-  [k: string]: never;
-};
+  | { kind: 'Array'; Array: { value: BorshSchema; length: number } }
+  | { kind: 'Vec'; Vec: { value: BorshSchema } }
+  | { kind: 'HashSet'; HashSet: { value: BorshSchema } }
+  | { kind: 'HashMap'; HashMap: { key: BorshSchema; value: BorshSchema } }
+  | { kind: 'Option'; Option: { value: BorshSchema } }
+  | { kind: 'Struct'; Struct: { fields: StructFields } }
+  | { kind: 'Enum'; Enum: { variants: EnumVariants } };
 
 export class BorshSchema {
-  private readonly schema: BorshSchemaInternal;
+  private readonly schema: EnumerableBorshSchema;
 
-  private constructor(schema: BorshSchemaInternal) {
+  private constructor(schema: EnumerableBorshSchema) {
     this.schema = schema;
   }
 
@@ -126,15 +126,15 @@ export class BorshSchema {
       }
 
       if ('struct' in schema) {
-        return BorshSchema.Struct(fromStructFieldsInternal(schema.struct));
+        return BorshSchema.Struct(fromInternalStructFields(schema.struct));
       }
 
       if ('enum' in schema) {
-        return BorshSchema.Enum(fromEnumVariantsInternal(schema.enum));
+        return BorshSchema.Enum(fromInternalEnumVariants(schema.enum));
       }
     }
 
-    throw Error(`Invalid schema ${JSON.stringify(schema)}`);
+    throw Error(`Unreachable`);
   }
 
   toSchema(): borsh.Schema {
@@ -169,39 +169,39 @@ export class BorshSchema {
         return 'string';
       case 'Option':
         return {
-          option: this.schema.value.toSchema(),
+          option: this.schema.Option.value.toSchema(),
         };
       case 'Array':
         return {
           array: {
-            type: this.schema.value.toSchema(),
-            len: this.schema.length,
+            type: this.schema.Array.value.toSchema(),
+            len: this.schema.Array.length,
           },
         };
       case 'Vec':
         return {
           array: {
-            type: this.schema.value.toSchema(),
+            type: this.schema.Vec.value.toSchema(),
           },
         };
       case 'HashSet':
         return {
-          set: this.schema.value.toSchema(),
+          set: this.schema.HashSet.value.toSchema(),
         };
       case 'HashMap':
         return {
           map: {
-            key: this.schema.key.toSchema(),
-            value: this.schema.value.toSchema(),
+            key: this.schema.HashMap.key.toSchema(),
+            value: this.schema.HashMap.value.toSchema(),
           },
         };
       case 'Struct':
         return {
-          struct: toStructFieldsInternal(this.schema.fields),
+          struct: toInternalStructFields(this.schema.Struct.fields),
         };
       case 'Enum':
         return {
-          enum: toEnumVariantsInternal(this.schema.variants),
+          enum: toInternalEnumVariants(this.schema.Enum.variants),
         };
     }
   }
@@ -356,7 +356,7 @@ export class BorshSchema {
    * @param length Length
    */
   static Array(value: BorshSchema, length: number): BorshSchema {
-    return new BorshSchema({ kind: 'Array', value, length });
+    return new BorshSchema({ kind: 'Array', Array: { value, length } });
   }
 
   /**
@@ -368,7 +368,7 @@ export class BorshSchema {
    * @param value Value
    */
   static Vec(value: BorshSchema): BorshSchema {
-    return new BorshSchema({ kind: 'Vec', value });
+    return new BorshSchema({ kind: 'Vec', Vec: { value } });
   }
 
   /**
@@ -380,7 +380,7 @@ export class BorshSchema {
    * @param value Value
    */
   static HashSet(value: BorshSchema): BorshSchema {
-    return new BorshSchema({ kind: 'HashSet', value });
+    return new BorshSchema({ kind: 'HashSet', HashSet: { value } });
   }
 
   /**
@@ -396,7 +396,7 @@ export class BorshSchema {
    * @param value Value
    */
   static HashMap(key: BorshSchema, value: BorshSchema): BorshSchema {
-    return new BorshSchema({ kind: 'HashMap', key, value });
+    return new BorshSchema({ kind: 'HashMap', HashMap: { key, value } });
   }
 
   /**
@@ -412,7 +412,7 @@ export class BorshSchema {
    * @param value Value
    */
   static Option(value: BorshSchema): BorshSchema {
-    return new BorshSchema({ kind: 'Option', value });
+    return new BorshSchema({ kind: 'Option', Option: { value } });
   }
 
   /**
@@ -447,7 +447,7 @@ export class BorshSchema {
    * @param fields Struct fields
    */
   static Struct(fields: StructFields): BorshSchema {
-    return new BorshSchema({ kind: 'Struct', fields });
+    return new BorshSchema({ kind: 'Struct', Struct: { fields } });
   }
 
   /**
@@ -512,11 +512,11 @@ export class BorshSchema {
    * @param variants Enum variants
    */
   static Enum(variants: EnumVariants): BorshSchema {
-    return new BorshSchema({ kind: 'Enum', variants });
+    return new BorshSchema({ kind: 'Enum', Enum: { variants } });
   }
 }
 
-function fromStructFieldsInternal(fields: StructFieldsInternal): StructFields {
+function fromInternalStructFields(fields: InternalStructFields): StructFields {
   const entries: [string, BorshSchema][] = Object.entries(fields).map(([key, value]) => [
     key,
     BorshSchema.fromSchema(value),
@@ -524,23 +524,19 @@ function fromStructFieldsInternal(fields: StructFieldsInternal): StructFields {
   return Object.fromEntries(entries);
 }
 
-function fromEnumVariantsInternal(variants: EnumVariantsInternal): EnumVariants {
+function fromInternalEnumVariants(variants: InternalEnumVariants): EnumVariants {
   const entries: [string, BorshSchema][] = variants.map(({ struct }) => {
-    const keys = Object.keys(struct);
-    if (keys.length !== 1) {
-      throw Error('Each struct must contain 1 field as enum variant');
-    }
-    const key = keys[0];
+    const key = Object.keys(struct)[0];
     return [key, BorshSchema.fromSchema(struct[key])];
   });
   return Object.fromEntries(entries);
 }
 
-function toStructFieldsInternal(fields: StructFields): StructFieldsInternal {
+function toInternalStructFields(fields: StructFields): InternalStructFields {
   const entries: [string, borsh.Schema][] = Object.entries(fields).map(([key, value]) => [key, value.toSchema()]);
   return Object.fromEntries(entries);
 }
 
-function toEnumVariantsInternal(variants: EnumVariants): EnumVariantsInternal {
+function toInternalEnumVariants(variants: EnumVariants): InternalEnumVariants {
   return Object.entries(variants).map(([key, value]) => ({ struct: { [key]: value.toSchema() } }));
 }
