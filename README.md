@@ -155,9 +155,9 @@ const buffer = borshSerialize(schema, balances);
 const schema = BorshSchema.Option(BorshSchema.String);
 
 const some: string | null = 'hello world';
-const none: string | null = null;
-
 const someBuffer = borshSerialize(schema, some);
+
+const none: string | null = null;
 const noneBuffer = borshSerialize(schema, none);
 ```
 
@@ -188,9 +188,8 @@ const person: Person = {
 const buffer = borshSerialize(schema, person);
 ```
 
-### Enum
+### Enum Without Associated Type
 ```ts
-// enum without associated value
 type Status = 
   | {
       Pending: {};
@@ -215,8 +214,8 @@ const status: Status = {
 const buffer = borshSerialize(schema, status);
 ```
 
+### Enum With Associated Type
 ```ts
-// enum with associated value
 type Shape =
   | {
       Square: number;

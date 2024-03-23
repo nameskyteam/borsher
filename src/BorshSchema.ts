@@ -130,7 +130,7 @@ export class BorshSchema {
       }
     }
 
-    unreachable();
+    throw Error(`Invalid schema ${JSON.stringify(schema)}`);
   }
 
   toSchema(): borsh.Schema {
@@ -423,9 +423,9 @@ export class BorshSchema {
    * const schema = BorshSchema.Option(BorshSchema.String);
    *
    * const some: string | null = 'hello world';
-   * const none: string | null = null;
-   *
    * const someBuffer = borshSerialize(schema, some);
+   *
+   * const none: string | null = null;
    * const noneBuffer = borshSerialize(schema, none);
    * @param value Value
    */
@@ -563,8 +563,4 @@ function toStructFieldsInternal(fields: StructFields): StructFieldsInternal {
 
 function toEnumVariantsInternal(variants: EnumVariants): EnumVariantsInternal {
   return Object.entries(variants).map(([key, value]) => ({ struct: { [key]: value.toSchema() } }));
-}
-
-function unreachable(): never {
-  throw Error(`Unreachable`);
 }
