@@ -1,17 +1,11 @@
 import * as borsh from 'borsh';
 import { StructType } from 'borsh/lib/types/types';
 
-export type Unit = {
-  [k: string]: never;
-};
+export type Unit = Record<string, never>;
 
-export type StructFields = {
-  [k: string]: BorshSchema;
-};
+export type StructFields = Record<string, BorshSchema>;
 
-export type EnumVariants = {
-  [k: string]: BorshSchema;
-};
+export type EnumVariants = Record<string, BorshSchema>;
 
 type InternalStructFields = StructType['struct'];
 
