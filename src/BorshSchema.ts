@@ -11,7 +11,7 @@ type InternalStructFields = StructType['struct'];
 
 type InternalEnumVariants = StructType[];
 
-type EnumerableBorshSchema =
+type InternalBorshSchema =
   | { kind: 'u8' }
   | { kind: 'u16' }
   | { kind: 'u32' }
@@ -35,9 +35,9 @@ type EnumerableBorshSchema =
   | { kind: 'Enum'; Enum: { variants: EnumVariants } };
 
 export class BorshSchema {
-  private readonly schema: EnumerableBorshSchema;
+  private readonly schema: InternalBorshSchema;
 
-  private constructor(schema: EnumerableBorshSchema) {
+  private constructor(schema: InternalBorshSchema) {
     this.schema = schema;
   }
 
@@ -132,72 +132,91 @@ export class BorshSchema {
   }
 
   toSchema(): borsh.Schema {
-    switch (this.schema.kind) {
-      case 'u8':
-        return 'u8';
-      case 'u16':
-        return 'u16';
-      case 'u32':
-        return 'u32';
-      case 'u64':
-        return 'u64';
-      case 'u128':
-        return 'u128';
-      case 'i8':
-        return 'i8';
-      case 'i16':
-        return 'i16';
-      case 'i32':
-        return 'i32';
-      case 'i64':
-        return 'i64';
-      case 'i128':
-        return 'i128';
-      case 'f32':
-        return 'f32';
-      case 'f64':
-        return 'f64';
-      case 'bool':
-        return 'bool';
-      case 'String':
-        return 'string';
-      case 'Option':
-        return {
-          option: this.schema.Option.value.toSchema(),
-        };
-      case 'Array':
-        return {
-          array: {
-            type: this.schema.Array.value.toSchema(),
-            len: this.schema.Array.length,
-          },
-        };
-      case 'Vec':
-        return {
-          array: {
-            type: this.schema.Vec.value.toSchema(),
-          },
-        };
-      case 'HashSet':
-        return {
-          set: this.schema.HashSet.value.toSchema(),
-        };
-      case 'HashMap':
-        return {
-          map: {
-            key: this.schema.HashMap.key.toSchema(),
-            value: this.schema.HashMap.value.toSchema(),
-          },
-        };
-      case 'Struct':
-        return {
-          struct: toInternalStructFields(this.schema.Struct.fields),
-        };
-      case 'Enum':
-        return {
-          enum: toInternalEnumVariants(this.schema.Enum.variants),
-        };
+    if (this.schema.kind === 'u8') {
+      return 'u8';
     }
+
+    if (this.schema.kind === 'u16') {
+      return 'u16';
+    }
+
+    if (this.schema.kind === 'u32') {
+      return 'u32';
+    }
+
+    if (this.schema.kind === 'u64') {
+      return 'u64';
+    }
+
+    if (this.schema.kind === 'u128') {
+      return 'u128';
+    }
+
+    if (this.schema.kind === 'i8') {
+      return 'i8';
+    }
+
+    if (this.schema.kind === 'i16') {
+      return 'i16';
+    }
+
+    if (this.schema.kind === 'i32') {
+      return 'i32';
+    }
+
+    if (this.schema.kind === 'i64') {
+      return 'i64';
+    }
+
+    if (this.schema.kind === 'i128') {
+      return 'i128';
+    }
+
+    if (this.schema.kind === 'f32') {
+      return 'f32';
+    }
+
+    if (this.schema.kind === 'f64') {
+      return 'f64';
+    }
+
+    if (this.schema.kind === 'bool') {
+      return 'bool';
+    }
+
+    if (this.schema.kind === 'String') {
+      return 'string';
+    }
+
+    if (this.schema.kind === 'Option') {
+      return { option: this.schema.Option.value.toSchema() };
+    }
+
+    if (this.schema.kind === 'Array') {
+      return { array: { type: this.schema.Array.value.toSchema(), len: this.schema.Array.length } };
+    }
+
+    if (this.schema.kind === 'Vec') {
+      return { array: { type: this.schema.Vec.value.toSchema() } };
+    }
+
+    if (this.schema.kind === 'HashSet') {
+      return { set: this.schema.HashSet.value.toSchema() };
+    }
+
+    if (this.schema.kind === 'HashMap') {
+      return { map: { key: this.schema.HashMap.key.toSchema(), value: this.schema.HashMap.value.toSchema() } };
+    }
+
+    if (this.schema.kind === 'Struct') {
+      return { struct: toInternalStructFields(this.schema.Struct.fields) };
+    }
+
+    if (this.schema.kind === 'Enum') {
+      return { enum: toInternalEnumVariants(this.schema.Enum.variants) };
+    }
+
+    throw Error(`Unreachable`);
   }
 
   /**
