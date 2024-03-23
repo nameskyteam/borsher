@@ -1,7 +1,7 @@
 # Borsher
-Support for [borsh](https://borsh.io) (de)serialization
+Support for [Borsh](https://borsh.io) (de)serialization
 
-Borsher wraps the [borsh-js](https://github.com/near/borsh-js) and simplifies the creation of schema
+Borsher wraps the [Borsh JS](https://github.com/near/borsh-js) and simplifies the creation of schema
 
 ## Install
 ```shell
