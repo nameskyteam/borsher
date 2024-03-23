@@ -36,7 +36,9 @@ export type EnumVariants = {
   [k: string]: BorshSchema;
 };
 
-export type Unit = {};
+export type Unit = {
+  [k: string]: never;
+};
 
 export class BorshSchema {
   private readonly schema: BorshSchemaInternal;
