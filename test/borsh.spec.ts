@@ -1,4 +1,4 @@
-import { BorshSchema, borshSerialize, borshDeserialize } from '../src';
+import { BorshSchema, borshSerialize, borshDeserialize, Unit } from '../src';
 
 test('u8', () => {
   const schema = BorshSchema.u8;
@@ -163,7 +163,7 @@ test('Option', () => {
 
 test('Unit', () => {
   const schema = BorshSchema.Unit;
-  const unit: {} = {};
+  const unit: Unit = {};
   const serialized = borshSerialize(schema, unit);
   const deserialized = borshDeserialize(schema, serialized);
   expect(unit).toEqual(deserialized);
@@ -194,13 +194,13 @@ test('Struct', () => {
 test('Enum Without Associated Type', () => {
   type Status =
     | {
-        Pending: {};
+        Pending: Unit;
       }
     | {
-        Fulfilled: {};
+        Fulfilled: Unit;
       }
     | {
-        Rejected: {};
+        Rejected: Unit;
       };
 
   const schema = BorshSchema.Enum({
