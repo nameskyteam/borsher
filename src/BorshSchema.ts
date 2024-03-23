@@ -1,30 +1,205 @@
 import * as borsh from 'borsh';
+import { StructType } from 'borsh/lib/types/types';
 
-interface ExternalStructFields {
-  [k: string]: borsh.Schema;
-}
+type StructFieldsInternal = StructType['struct'];
 
-export interface StructFields {
+type EnumVariantsInternal = StructType[];
+
+type BorshSchemaInternal =
+  | { kind: 'u8' }
+  | { kind: 'u16' }
+  | { kind: 'u32' }
+  | { kind: 'u64' }
+  | { kind: 'u128' }
+  | { kind: 'i8' }
+  | { kind: 'i16' }
+  | { kind: 'i32' }
+  | { kind: 'i64' }
+  | { kind: 'i128' }
+  | { kind: 'f32' }
+  | { kind: 'f64' }
+  | { kind: 'bool' }
+  | { kind: 'String' }
+  | { kind: 'Array'; value: BorshSchema; length: number }
+  | { kind: 'Vec'; value: BorshSchema }
+  | { kind: 'HashSet'; value: BorshSchema }
+  | { kind: 'HashMap'; key: BorshSchema; value: BorshSchema }
+  | { kind: 'Option'; value: BorshSchema }
+  | { kind: 'Struct'; fields: StructFields }
+  | { kind: 'Enum'; variants: EnumVariants };
+
+export type StructFields = {
   [k: string]: BorshSchema;
-}
+};
 
-export interface EnumVariants {
+export type EnumVariants = {
   [k: string]: BorshSchema;
-}
+};
 
 export class BorshSchema {
-  private readonly schema: borsh.Schema;
+  private readonly schema: BorshSchemaInternal;
 
-  private constructor(schema: borsh.Schema) {
+  private constructor(schema: BorshSchemaInternal) {
     this.schema = schema;
   }
 
-  static from(schema: borsh.Schema) {
-    return new BorshSchema(schema);
+  static fromSchema(schema: borsh.Schema): BorshSchema {
+    if (typeof schema === 'string') {
+      if (schema === 'u8') {
+        return BorshSchema.u8;
+      }
+
+      if (schema === 'u16') {
+        return BorshSchema.u16;
+      }
+
+      if (schema === 'u32') {
+        return BorshSchema.u32;
+      }
+
+      if (schema === 'u64') {
+        return BorshSchema.u64;
+      }
+
+      if (schema === 'u128') {
+        return BorshSchema.u128;
+      }
+
+      if (schema === 'i8') {
+        return BorshSchema.i8;
+      }
+
+      if (schema === 'i16') {
+        return BorshSchema.i16;
+      }
+
+      if (schema === 'i32') {
+        return BorshSchema.i32;
+      }
+
+      if (schema === 'i64') {
+        return BorshSchema.i64;
+      }
+
+      if (schema === 'i128') {
+        return BorshSchema.i128;
+      }
+
+      if (schema === 'f32') {
+        return BorshSchema.f32;
+      }
+
+      if (schema === 'f64') {
+        return BorshSchema.f64;
+      }
+
+      if (schema === 'bool') {
+        return BorshSchema.bool;
+      }
+
+      if (schema === 'string') {
+        return BorshSchema.String;
+      }
+    } else {
+      if ('array' in schema && typeof schema.array.len === 'number') {
+        return BorshSchema.Array(BorshSchema.fromSchema(schema.array.type), schema.array.len);
+      }
+
+      if ('array' in schema && typeof schema.array.len !== 'number') {
+        return BorshSchema.Vec(BorshSchema.fromSchema(schema.array.type));
+      }
+
+      if ('set' in schema) {
+        return BorshSchema.HashSet(BorshSchema.fromSchema(schema.set));
+      }
+
+      if ('map' in schema) {
+        return BorshSchema.HashMap(BorshSchema.fromSchema(schema.map.key), BorshSchema.fromSchema(schema.map.value));
+      }
+
+      if ('option' in schema) {
+        return BorshSchema.Option(BorshSchema.fromSchema(schema.option));
+      }
+
+      if ('struct' in schema) {
+        return BorshSchema.Struct(fromStructFieldsInternal(schema.struct));
+      }
+
+      if ('enum' in schema) {
+        return BorshSchema.Enum(fromEnumVariantsInternal(schema.enum));
+      }
+    }
+
+    unreachable();
   }
 
-  into(): borsh.Schema {
-    return this.schema;
+  toSchema(): borsh.Schema {
+    switch (this.schema.kind) {
+      case 'u8':
+        return 'u8';
+      case 'u16':
+        return 'u16';
+      case 'u32':
+        return 'u32';
+      case 'u64':
+        return 'u64';
+      case 'u128':
+        return 'u128';
+      case 'i8':
+        return 'i8';
+      case 'i16':
+        return 'i16';
+      case 'i32':
+        return 'i32';
+      case 'i64':
+        return 'i64';
+      case 'i128':
+        return 'i128';
+      case 'f32':
+        return 'f32';
+      case 'f64':
+        return 'f64';
+      case 'bool':
+        return 'bool';
+      case 'String':
+        return 'string';
+      case 'Option':
+        return {
+          option: this.schema.value.toSchema(),
+        };
+      case 'Array':
+        return {
+          array: {
+            type: this.schema.value.toSchema(),
+            len: this.schema.length,
+          },
+        };
+      case 'Vec':
+        return {
+          array: {
+            type: this.schema.value.toSchema(),
+          },
+        };
+      case 'HashSet':
+        return {
+          set: this.schema.value.toSchema(),
+        };
+      case 'HashMap':
+        return {
+          map: {
+            key: this.schema.key.toSchema(),
+            value: this.schema.value.toSchema(),
+          },
+        };
+      case 'Struct':
+        return {
+          struct: toStructFieldsInternal(this.schema.fields),
+        };
+      case 'Enum':
+        return {
+          enum: toEnumVariantsInternal(this.schema.variants),
+        };
+    }
   }
 
   /**
@@ -35,7 +210,7 @@ export class BorshSchema {
    * const buffer = borshSerialize(BorshSchema.u8, n);
    */
   static get u8(): BorshSchema {
-    return BorshSchema.from('u8');
+    return new BorshSchema({ kind: 'u8' });
   }
 
   /**
@@ -46,7 +221,7 @@ export class BorshSchema {
    * const buffer = borshSerialize(BorshSchema.u16, n);
    */
   static get u16(): BorshSchema {
-    return BorshSchema.from('u16');
+    return new BorshSchema({ kind: 'u16' });
   }
 
   /**
@@ -57,7 +232,7 @@ export class BorshSchema {
    * const buffer = borshSerialize(BorshSchema.u32, n);
    */
   static get u32(): BorshSchema {
-    return BorshSchema.from('u32');
+    return new BorshSchema({ kind: 'u32' });
   }
 
   /**
@@ -68,7 +243,7 @@ export class BorshSchema {
    * const buffer = borshSerialize(BorshSchema.u64, n);
    */
   static get u64(): BorshSchema {
-    return BorshSchema.from('u64');
+    return new BorshSchema({ kind: 'u64' });
   }
 
   /**
@@ -79,7 +254,7 @@ export class BorshSchema {
    * const buffer = borshSerialize(BorshSchema.u128, n);
    */
   static get u128(): BorshSchema {
-    return BorshSchema.from('u128');
+    return new BorshSchema({ kind: 'u128' });
   }
 
   /**
@@ -90,7 +265,7 @@ export class BorshSchema {
    * const buffer = borshSerialize(BorshSchema.i8, n);
    */
   static get i8(): BorshSchema {
-    return BorshSchema.from('i8');
+    return new BorshSchema({ kind: 'i8' });
   }
 
   /**
@@ -101,7 +276,7 @@ export class BorshSchema {
    * const buffer = borshSerialize(BorshSchema.i16, n);
    */
   static get i16(): BorshSchema {
-    return BorshSchema.from('i16');
+    return new BorshSchema({ kind: 'i16' });
   }
 
   /**
@@ -112,7 +287,7 @@ export class BorshSchema {
    * const buffer = borshSerialize(BorshSchema.i32, n);
    */
   static get i32(): BorshSchema {
-    return BorshSchema.from('i32');
+    return new BorshSchema({ kind: 'i32' });
   }
 
   /**
@@ -123,7 +298,7 @@ export class BorshSchema {
    * const buffer = borshSerialize(BorshSchema.i64, n);
    */
   static get i64(): BorshSchema {
-    return BorshSchema.from('i64');
+    return new BorshSchema({ kind: 'i64' });
   }
 
   /**
@@ -134,7 +309,7 @@ export class BorshSchema {
    * const buffer = borshSerialize(BorshSchema.i128, n);
    */
   static get i128(): BorshSchema {
-    return BorshSchema.from('i128');
+    return new BorshSchema({ kind: 'i128' });
   }
 
   /**
@@ -145,7 +320,7 @@ export class BorshSchema {
    * const buffer = borshSerialize(BorshSchema.f32, n);
    */
   static get f32(): BorshSchema {
-    return BorshSchema.from('f32');
+    return new BorshSchema({ kind: 'f32' });
   }
 
   /**
@@ -156,7 +331,7 @@ export class BorshSchema {
    * const buffer = borshSerialize(BorshSchema.f64, n);
    */
   static get f64(): BorshSchema {
-    return BorshSchema.from('f64');
+    return new BorshSchema({ kind: 'f64' });
   }
 
   /**
@@ -167,7 +342,7 @@ export class BorshSchema {
    * const buffer = borshSerialize(BorshSchema.bool, b);
    */
   static get bool(): BorshSchema {
-    return BorshSchema.from('bool');
+    return new BorshSchema({ kind: 'bool' });
   }
 
   /**
@@ -178,7 +353,7 @@ export class BorshSchema {
    * const buffer = borshSerialize(BorshSchema.String, message);
    */
   static get String(): BorshSchema {
-    return BorshSchema.from('string');
+    return new BorshSchema({ kind: 'String' });
   }
 
   /**
@@ -189,11 +364,11 @@ export class BorshSchema {
    * const messages: string[] = ['hello', 'world'];
    *
    * const buffer = borshSerialize(schema, messages);
-   * @param ele Element
-   * @param len Length
+   * @param value Value
+   * @param length Length
    */
-  static Array(ele: BorshSchema, len: number): BorshSchema {
-    return BorshSchema.from({ array: { type: ele.into(), len } });
+  static Array(value: BorshSchema, length: number): BorshSchema {
+    return new BorshSchema({ kind: 'Array', value, length });
   }
 
   /**
@@ -204,10 +379,10 @@ export class BorshSchema {
    * const messages: string[] = ['hello', 'world'];
    *
    * const buffer = borshSerialize(schema, messages);
-   * @param ele Element
+   * @param value Value
    */
-  static Vec(ele: BorshSchema): BorshSchema {
-    return BorshSchema.from({ array: { type: ele.into() } });
+  static Vec(value: BorshSchema): BorshSchema {
+    return new BorshSchema({ kind: 'Vec', value });
   }
 
   /**
@@ -218,10 +393,10 @@ export class BorshSchema {
    * const messages: Set<string> = new Set(['hello', 'world']);
    *
    * const buffer = borshSerialize(schema, messages);
-   * @param ele Element
+   * @param value Value
    */
-  static HashSet(ele: BorshSchema): BorshSchema {
-    return BorshSchema.from({ set: ele.into() });
+  static HashSet(value: BorshSchema): BorshSchema {
+    return new BorshSchema({ kind: 'HashSet', value });
   }
 
   /**
@@ -235,11 +410,11 @@ export class BorshSchema {
    * ]);
    *
    * const buffer = borshSerialize(schema, balances);
-   * @param k Key
-   * @param v Value
+   * @param key Key
+   * @param value Value
    */
-  static HashMap(k: BorshSchema, v: BorshSchema): BorshSchema {
-    return BorshSchema.from({ map: { key: k.into(), value: v.into() } });
+  static HashMap(key: BorshSchema, value: BorshSchema): BorshSchema {
+    return new BorshSchema({ kind: 'HashMap', key, value });
   }
 
   /**
@@ -252,10 +427,10 @@ export class BorshSchema {
    *
    * const someBuffer = borshSerialize(schema, some);
    * const noneBuffer = borshSerialize(schema, none);
-   * @param v Value
+   * @param value Value
    */
-  static Option(v: BorshSchema): BorshSchema {
-    return BorshSchema.from({ option: v.into() });
+  static Option(value: BorshSchema): BorshSchema {
+    return new BorshSchema({ kind: 'Option', value });
   }
 
   /**
@@ -272,7 +447,7 @@ export class BorshSchema {
   /**
    * Schema for Struct.
    * @example
-   * interface Person {
+   * type Person = {
    *   name: string;
    *   age: number;
    * }
@@ -291,12 +466,7 @@ export class BorshSchema {
    * @param fields Struct fields
    */
   static Struct(fields: StructFields): BorshSchema {
-    return BorshSchema.from({
-      struct: Object.entries(fields).reduce<ExternalStructFields>((externalStructFields, [k, v]) => {
-        externalStructFields[k] = v.into();
-        return externalStructFields;
-      }, {}),
-    });
+    return new BorshSchema({ kind: 'Struct', fields });
   }
 
   /**
@@ -308,16 +478,16 @@ export class BorshSchema {
    *       Pending: {};
    *     }
    *   | {
-   *       Filled: {};
+   *       Fulfilled: {};
    *     }
    *   | {
-   *       Cancelled: {};
+   *       Rejected: {};
    *     };
    *
    * const schema = BorshSchema.Enum({
    *   Pending: BorshSchema.Unit,
-   *   Filled: BorshSchema.Unit,
-   *   Cancelled: BorshSchema.Unit,
+   *   Fulfilled: BorshSchema.Unit,
+   *   Rejected: BorshSchema.Unit,
    * });
    *
    * const status: Status = {
@@ -362,10 +532,39 @@ export class BorshSchema {
    * @param variants Enum variants
    */
   static Enum(variants: EnumVariants): BorshSchema {
-    return BorshSchema.from({
-      enum: Object.entries(variants).map(([k, v]) => {
-        return { struct: { [k]: v.into() } };
-      }),
-    });
+    return new BorshSchema({ kind: 'Enum', variants });
   }
+}
+
+function fromStructFieldsInternal(fields: StructFieldsInternal): StructFields {
+  const entries: [string, BorshSchema][] = Object.entries(fields).map(([key, value]) => [
+    key,
+    BorshSchema.fromSchema(value),
+  ]);
+  return Object.fromEntries(entries);
+}
+
+function fromEnumVariantsInternal(variants: EnumVariantsInternal): EnumVariants {
+  const entries: [string, BorshSchema][] = variants.map(({ struct }) => {
+    const keys = Object.keys(struct);
+    if (keys.length !== 1) {
+      throw Error('Each struct must contain 1 field as enum variant');
+    }
+    const key = keys[0];
+    return [key, BorshSchema.fromSchema(struct[key])];
+  });
+  return Object.fromEntries(entries);
+}
+
+function toStructFieldsInternal(fields: StructFields): StructFieldsInternal {
+  const entries: [string, borsh.Schema][] = Object.entries(fields).map(([key, value]) => [key, value.toSchema()]);
+  return Object.fromEntries(entries);
+}
+
+function toEnumVariantsInternal(variants: EnumVariants): EnumVariantsInternal {
+  return Object.entries(variants).map(([key, value]) => ({ struct: { [key]: value.toSchema() } }));
+}
+
+function unreachable(): never {
+  throw Error(`Unreachable`);
 }

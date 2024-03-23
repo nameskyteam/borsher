@@ -170,7 +170,7 @@ const buffer = borshSerialize(BorshSchema.Unit, unit);
 
 ### Struct
 ```ts
-interface Person {
+type Person = {
   name: string;
   age: number;
 }
@@ -196,16 +196,16 @@ type Status =
       Pending: {};
     }
   | {
-      Filled: {};
+      Fulfilled: {};
     }
   | {
-      Cancelled: {};
+      Rejected: {};
     };
 
 const schema = BorshSchema.Enum({
   Pending: BorshSchema.Unit,
-  Filled: BorshSchema.Unit,
-  Cancelled: BorshSchema.Unit,
+  Fulfilled: BorshSchema.Unit,
+  Rejected: BorshSchema.Unit,
 });
 
 const status: Status = {
