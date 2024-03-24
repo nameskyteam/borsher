@@ -1,6 +1,12 @@
 import { Schema } from 'borsh';
 import { ArrayType, EnumType, MapType, OptionType, SetType, StructType } from 'borsh/lib/types/types';
-import { EnumTypeVariants, StructTypeFields, BorshSchemaInternal, EnumVariants, StructFields } from './types';
+import { BorshSchemaInternal, EnumVariants, StructFields } from './types';
+import {
+  convertEnumTypeVariantsToEnumVariants,
+  convertStructTypeFieldsToStructFields,
+  convertEnumVariantsToEnumTypeVariants,
+  convertStructFieldsToStructTypeFields,
+} from './utils';
 
 export class BorshSchema {
   private readonly internal: BorshSchemaInternal;
@@ -39,12 +45,12 @@ export class BorshSchema {
   }
 
   private static fromStructType(schema: StructType): BorshSchema {
-    const fields = fromStructTypeFields(schema.struct);
+    const fields = convertStructTypeFieldsToStructFields(schema.struct);
     return BorshSchema.Struct(fields);
   }
 
   private static fromEnumType(schema: EnumType): BorshSchema {
-    const variants = fromEnumTypeVariants(schema.enum);
+    const variants = convertEnumTypeVariantsToEnumVariants(schema.enum);
     return BorshSchema.Enum(variants);
   }
 
@@ -86,7 +92,7 @@ export class BorshSchema {
 
   private toStructType(): StructType {
     if (this.internal.kind === 'Struct') {
-      return { struct: toStructTypeFields(this.internal.Struct.fields) };
+      return { struct: convertStructFieldsToStructTypeFields(this.internal.Struct.fields) };
     }
 
     this.unexpectedKind();
@@ -94,7 +100,7 @@ export class BorshSchema {
 
   private toEnumType(): EnumType {
     if (this.internal.kind === 'Enum') {
-      return { enum: toEnumTypeVariants(this.internal.Enum.variants) };
+      return { enum: convertEnumVariantsToEnumTypeVariants(this.internal.Enum.variants) };
     }
 
     this.unexpectedKind();
@@ -584,29 +590,4 @@ export class BorshSchema {
   static Enum(variants: EnumVariants): BorshSchema {
     return new BorshSchema({ kind: 'Enum', Enum: { variants } });
   }
-}
-
-function fromStructTypeFields(fields: StructTypeFields): StructFields {
-  const entries: [string, BorshSchema][] = Object.entries(fields).map(([key, value]) => [
-    key,
-    BorshSchema.fromSchema(value),
-  ]);
-  return Object.fromEntries(entries);
-}
-
-function fromEnumTypeVariants(variants: EnumTypeVariants): EnumVariants {
-  const entries: [string, BorshSchema][] = variants.map(({ struct }) => {
-    const key = Object.keys(struct)[0];
-    return [key, BorshSchema.fromSchema(struct[key])];
-  });
-  return Object.fromEntries(entries);
-}
-
-function toStructTypeFields(fields: StructFields): StructTypeFields {
-  const entries: [string, Schema][] = Object.entries(fields).map(([key, value]) => [key, value.toSchema()]);
-  return Object.fromEntries(entries);
-}
-
-function toEnumTypeVariants(variants: EnumVariants): EnumTypeVariants {
-  return Object.entries(variants).map(([key, value]) => ({ struct: { [key]: value.toSchema() } }));
 }
