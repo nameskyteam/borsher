@@ -1,47 +1,115 @@
-import * as borsh from 'borsh';
-import { StructType } from 'borsh/lib/types/types';
-
-export type Unit = Record<string, never>;
-
-export type StructFields = Record<string, BorshSchema>;
-
-export type EnumVariants = Record<string, BorshSchema>;
-
-type InternalStructFields = StructType['struct'];
-
-type InternalEnumVariants = StructType[];
-
-type InternalBorshSchema =
-  | { kind: 'u8' }
-  | { kind: 'u16' }
-  | { kind: 'u32' }
-  | { kind: 'u64' }
-  | { kind: 'u128' }
-  | { kind: 'i8' }
-  | { kind: 'i16' }
-  | { kind: 'i32' }
-  | { kind: 'i64' }
-  | { kind: 'i128' }
-  | { kind: 'f32' }
-  | { kind: 'f64' }
-  | { kind: 'bool' }
-  | { kind: 'String' }
-  | { kind: 'Array'; Array: { value: BorshSchema; length: number } }
-  | { kind: 'Vec'; Vec: { value: BorshSchema } }
-  | { kind: 'HashSet'; HashSet: { value: BorshSchema } }
-  | { kind: 'HashMap'; HashMap: { key: BorshSchema; value: BorshSchema } }
-  | { kind: 'Option'; Option: { value: BorshSchema } }
-  | { kind: 'Struct'; Struct: { fields: StructFields } }
-  | { kind: 'Enum'; Enum: { variants: EnumVariants } };
+import { Schema } from 'borsh';
+import { ArrayType, EnumType, MapType, OptionType, SetType, StructType } from 'borsh/lib/types/types';
+import { BorshSchemaInternal, EnumVariants, StructFields } from './types';
+import {
+  convertStructTypeFieldsToStructFields,
+  convertStructFieldsToStructTypeFields,
+  convertEnumTypeVariantsToEnumVariants,
+  convertEnumVariantsToEnumTypeVariants,
+} from './utils';
 
 export class BorshSchema {
-  private readonly schema: InternalBorshSchema;
+  private readonly internal: BorshSchemaInternal;
 
-  private constructor(schema: InternalBorshSchema) {
-    this.schema = schema;
+  private constructor(internal: BorshSchemaInternal) {
+    this.internal = internal;
   }
 
-  static fromSchema(schema: borsh.Schema): BorshSchema {
+  private unexpectedKind(): never {
+    throw Error(`Unexpected kind: ${this.internal.kind}`);
+  }
+
+  private static fromOptionType(schema: OptionType): BorshSchema {
+    const value = BorshSchema.fromSchema(schema.option);
+    return BorshSchema.Option(value);
+  }
+
+  private static fromArrayType(schema: ArrayType): BorshSchema {
+    const value = BorshSchema.fromSchema(schema.array.type);
+    if (typeof schema.array.len === 'number') {
+      return BorshSchema.Array(value, schema.array.len);
+    } else {
+      return BorshSchema.Vec(value);
+    }
+  }
+
+  private static fromSetType(schema: SetType): BorshSchema {
+    const value = BorshSchema.fromSchema(schema.set);
+    return BorshSchema.HashSet(value);
+  }
+
+  private static fromMapType(schema: MapType): BorshSchema {
+    const key = BorshSchema.fromSchema(schema.map.key);
+    const value = BorshSchema.fromSchema(schema.map.value);
+    return BorshSchema.HashMap(key, value);
+  }
+
+  private static fromStructType(schema: StructType): BorshSchema {
+    const fields = convertStructTypeFieldsToStructFields(schema.struct);
+    return BorshSchema.Struct(fields);
+  }
+
+  private static fromEnumType(schema: EnumType): BorshSchema {
+    const variants = convertEnumTypeVariantsToEnumVariants(schema.enum);
+    return BorshSchema.Enum(variants);
+  }
+
+  private toOptionType(): OptionType {
+    if (this.internal.kind === 'Option') {
+      return { option: this.internal.Option.value.toSchema() };
+    }
+
+    this.unexpectedKind();
+  }
+
+  private toArrayType(): ArrayType {
+    if (this.internal.kind === 'Array') {
+      return { array: { type: this.internal.Array.value.toSchema(), len: this.internal.Array.length } };
+    }
+
+    if (this.internal.kind === 'Vec') {
+      return { array: { type: this.internal.Vec.value.toSchema() } };
+    }
+
+    this.unexpectedKind();
+  }
+
+  private toSetType(): SetType {
+    if (this.internal.kind === 'HashSet') {
+      return { set: this.internal.HashSet.value.toSchema() };
+    }
+
+    this.unexpectedKind();
+  }
+
+  private toMapType(): MapType {
+    if (this.internal.kind === 'HashMap') {
+      return { map: { key: this.internal.HashMap.key.toSchema(), value: this.internal.HashMap.value.toSchema() } };
+    }
+
+    this.unexpectedKind();
+  }
+
+  private toStructType(): StructType {
+    if (this.internal.kind === 'Struct') {
+      return { struct: convertStructFieldsToStructTypeFields(this.internal.Struct.fields) };
+    }
+
+    this.unexpectedKind();
+  }
+
+  private toEnumType(): EnumType {
+    if (this.internal.kind === 'Enum') {
+      return { enum: convertEnumVariantsToEnumTypeVariants(this.internal.Enum.variants) };
+    }
+
+    this.unexpectedKind();
+  }
+
+  /**
+   * From Schema.
+   */
+  static fromSchema(schema: Schema): BorshSchema {
     if (typeof schema === 'string') {
       if (schema === 'u8') {
         return BorshSchema.u8;
@@ -99,124 +167,119 @@ export class BorshSchema {
         return BorshSchema.String;
       }
     } else {
-      if ('array' in schema && typeof schema.array.len === 'number') {
-        return BorshSchema.Array(BorshSchema.fromSchema(schema.array.type), schema.array.len);
+      if ('option' in schema) {
+        return BorshSchema.fromOptionType(schema);
       }
 
-      if ('array' in schema && typeof schema.array.len !== 'number') {
-        return BorshSchema.Vec(BorshSchema.fromSchema(schema.array.type));
+      if ('array' in schema) {
+        return BorshSchema.fromArrayType(schema);
       }
 
       if ('set' in schema) {
-        return BorshSchema.HashSet(BorshSchema.fromSchema(schema.set));
+        return BorshSchema.fromSetType(schema);
       }
 
       if ('map' in schema) {
-        return BorshSchema.HashMap(BorshSchema.fromSchema(schema.map.key), BorshSchema.fromSchema(schema.map.value));
-      }
-
-      if ('option' in schema) {
-        return BorshSchema.Option(BorshSchema.fromSchema(schema.option));
+        return BorshSchema.fromMapType(schema);
       }
 
       if ('struct' in schema) {
-        return BorshSchema.Struct(fromInternalStructFields(schema.struct));
+        return BorshSchema.fromStructType(schema);
       }
 
       if ('enum' in schema) {
-        return BorshSchema.Enum(fromInternalEnumVariants(schema.enum));
+        return BorshSchema.fromEnumType(schema);
       }
     }
 
-    throw Error(`Unreachable`);
+    throw Error(`Unexpected schema: ${JSON.stringify(schema)}`);
   }
 
-  toSchema(): borsh.Schema {
-    if (this.schema.kind === 'u8') {
+  /**
+   * To Schema.
+   */
+  toSchema(): Schema {
+    if (this.internal.kind === 'u8') {
       return 'u8';
     }
 
-    if (this.schema.kind === 'u16') {
+    if (this.internal.kind === 'u16') {
       return 'u16';
     }
 
-    if (this.schema.kind === 'u32') {
+    if (this.internal.kind === 'u32') {
       return 'u32';
     }
 
-    if (this.schema.kind === 'u64') {
+    if (this.internal.kind === 'u64') {
       return 'u64';
     }
 
-    if (this.schema.kind === 'u128') {
+    if (this.internal.kind === 'u128') {
       return 'u128';
     }
 
-    if (this.schema.kind === 'i8') {
+    if (this.internal.kind === 'i8') {
       return 'i8';
     }
 
-    if (this.schema.kind === 'i16') {
+    if (this.internal.kind === 'i16') {
       return 'i16';
     }
 
-    if (this.schema.kind === 'i32') {
+    if (this.internal.kind === 'i32') {
       return 'i32';
     }
 
-    if (this.schema.kind === 'i64') {
+    if (this.internal.kind === 'i64') {
       return 'i64';
     }
 
-    if (this.schema.kind === 'i128') {
+    if (this.internal.kind === 'i128') {
       return 'i128';
     }
 
-    if (this.schema.kind === 'f32') {
+    if (this.internal.kind === 'f32') {
       return 'f32';
     }
 
-    if (this.schema.kind === 'f64') {
+    if (this.internal.kind === 'f64') {
       return 'f64';
     }
 
-    if (this.schema.kind === 'bool') {
+    if (this.internal.kind === 'bool') {
       return 'bool';
     }
 
-    if (this.schema.kind === 'String') {
+    if (this.internal.kind === 'String') {
       return 'string';
     }
 
-    if (this.schema.kind === 'Option') {
-      return { option: this.schema.Option.value.toSchema() };
+    if (this.internal.kind === 'Option') {
+      return this.toOptionType();
     }
 
-    if (this.schema.kind === 'Array') {
-      return { array: { type: this.schema.Array.value.toSchema(), len: this.schema.Array.length } };
+    if (this.internal.kind === 'Array' || this.internal.kind === 'Vec') {
+      return this.toArrayType();
     }
 
-    if (this.schema.kind === 'Vec') {
-      return { array: { type: this.schema.Vec.value.toSchema() } };
+    if (this.internal.kind === 'HashSet') {
+      return this.toSetType();
     }
 
-    if (this.schema.kind === 'HashSet') {
-      return { set: this.schema.HashSet.value.toSchema() };
+    if (this.internal.kind === 'HashMap') {
+      return this.toMapType();
     }
 
-    if (this.schema.kind === 'HashMap') {
-      return { map: { key: this.schema.HashMap.key.toSchema(), value: this.schema.HashMap.value.toSchema() } };
+    if (this.internal.kind === 'Struct') {
+      return this.toStructType();
     }
 
-    if (this.schema.kind === 'Struct') {
-      return { struct: toInternalStructFields(this.schema.Struct.fields) };
+    if (this.internal.kind === 'Enum') {
+      return this.toEnumType();
     }
 
-    if (this.schema.kind === 'Enum') {
-      return { enum: toInternalEnumVariants(this.schema.Enum.variants) };
-    }
-
-    throw Error(`Unreachable`);
+    this.unexpectedKind();
   }
 
   /**
@@ -360,6 +423,22 @@ export class BorshSchema {
   }
 
   /**
+   * Schema for Option.
+   * @example
+   * const schema = BorshSchema.Option(BorshSchema.String);
+   *
+   * const some: string | null = 'hello world';
+   * const someBuffer = borshSerialize(schema, some);
+   *
+   * const none: string | null = null;
+   * const noneBuffer = borshSerialize(schema, none);
+   * @param value Value
+   */
+  static Option(value: BorshSchema): BorshSchema {
+    return new BorshSchema({ kind: 'Option', Option: { value } });
+  }
+
+  /**
    * Schema for Array.
    * @example
    * const schema = BorshSchema.Array(BorshSchema.String, 2);
@@ -410,22 +489,6 @@ export class BorshSchema {
    */
   static HashMap(key: BorshSchema, value: BorshSchema): BorshSchema {
     return new BorshSchema({ kind: 'HashMap', HashMap: { key, value } });
-  }
-
-  /**
-   * Schema for Option.
-   * @example
-   * const schema = BorshSchema.Option(BorshSchema.String);
-   *
-   * const some: string | null = 'hello world';
-   * const someBuffer = borshSerialize(schema, some);
-   *
-   * const none: string | null = null;
-   * const noneBuffer = borshSerialize(schema, none);
-   * @param value Value
-   */
-  static Option(value: BorshSchema): BorshSchema {
-    return new BorshSchema({ kind: 'Option', Option: { value } });
   }
 
   /**
@@ -527,29 +590,4 @@ export class BorshSchema {
   static Enum(variants: EnumVariants): BorshSchema {
     return new BorshSchema({ kind: 'Enum', Enum: { variants } });
   }
-}
-
-function fromInternalStructFields(fields: InternalStructFields): StructFields {
-  const entries: [string, BorshSchema][] = Object.entries(fields).map(([key, value]) => [
-    key,
-    BorshSchema.fromSchema(value),
-  ]);
-  return Object.fromEntries(entries);
-}
-
-function fromInternalEnumVariants(variants: InternalEnumVariants): EnumVariants {
-  const entries: [string, BorshSchema][] = variants.map(({ struct }) => {
-    const key = Object.keys(struct)[0];
-    return [key, BorshSchema.fromSchema(struct[key])];
-  });
-  return Object.fromEntries(entries);
-}
-
-function toInternalStructFields(fields: StructFields): InternalStructFields {
-  const entries: [string, borsh.Schema][] = Object.entries(fields).map(([key, value]) => [key, value.toSchema()]);
-  return Object.fromEntries(entries);
-}
-
-function toInternalEnumVariants(variants: EnumVariants): InternalEnumVariants {
-  return Object.entries(variants).map(([key, value]) => ({ struct: { [key]: value.toSchema() } }));
 }

@@ -2,6 +2,7 @@
   "compilerOptions": {
     "target": "ESNext",
     "module": "CommonJS",
+    "outDir": "dist",
     "importHelpers": true,
     // output .d.ts declaration files for consumers
     "declaration": true,
@@ -25,5 +26,6 @@
     // error out if import and file system have a casing mismatch. Recommended by TS
     "forceConsistentCasingInFileNames": true,
     "experimentalDecorators": true
-  }
+  },
+  "include": ["src"]
 }
