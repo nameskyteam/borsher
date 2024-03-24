@@ -253,11 +253,7 @@ export class BorshSchema {
       return this.toOptionType();
     }
 
-    if (this.internal.kind === 'Array') {
-      return this.toArrayType();
-    }
-
-    if (this.internal.kind === 'Vec') {
+    if (this.internal.kind === 'Array' || this.internal.kind === 'Vec') {
       return this.toArrayType();
     }
 
