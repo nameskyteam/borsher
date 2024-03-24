@@ -1,5 +1,6 @@
 import { Buffer } from 'buffer';
-import { BorshSchema, EnumVariants, StructFields, Unit } from './BorshSchema';
+import { BorshSchema } from './BorshSchema';
+import { EnumVariants, StructFields, Unit } from './types';
 import { serialize, deserialize } from 'borsh';
 
 function borshSerialize<T>(schema: BorshSchema, data: T): Buffer {

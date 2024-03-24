@@ -97,6 +97,17 @@ const message: string = 'hello world';
 const buffer = borshSerialize(BorshSchema.String, message);
 ```
 
+### Option
+```ts
+const schema = BorshSchema.Option(BorshSchema.String);
+
+const some: string | null = 'hello world';
+const someBuffer = borshSerialize(schema, some);
+
+const none: string | null = null;
+const noneBuffer = borshSerialize(schema, none);
+```
+
 ### Array
 ```ts
 const schema = BorshSchema.Array(BorshSchema.String, 2);
@@ -126,17 +137,6 @@ const balances: Map<string, bigint> = new Map([
   ['bob', 2_000_000_000_000_000_000_000_000n],
 ]);
 const buffer = borshSerialize(schema, balances);
-```
-
-### Option
-```ts
-const schema = BorshSchema.Option(BorshSchema.String);
-
-const some: string | null = 'hello world';
-const someBuffer = borshSerialize(schema, some);
-
-const none: string | null = null;
-const noneBuffer = borshSerialize(schema, none);
 ```
 
 ### Unit
