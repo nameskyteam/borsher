@@ -4,7 +4,7 @@
   "license": "MIT",
   "description": "Borsh (de)serialization",
   "main": "dist/index.js",
-  "typings": "dist/index.d.ts",
+  "types": "dist/index.d.ts",
   "type": "commonjs",
   "files": [
     "dist",
@@ -15,7 +15,7 @@
     "test": "jest",
     "lint": "eslint src/**/*.ts --fix",
     "prettier": "prettier src/**/*.ts --write",
-    "prepare": "husky install"
+    "prepare": "husky"
   },
   "dependencies": {
     "borsh": "^2.0.0",
