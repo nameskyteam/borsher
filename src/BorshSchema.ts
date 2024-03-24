@@ -7,6 +7,7 @@ import {
   convertEnumTypeVariantsToEnumVariants,
   convertEnumVariantsToEnumTypeVariants,
 } from './utils';
+import { BorshSchemaError } from './errors';
 
 export class BorshSchema {
   private readonly internal: BorshSchemaInternal;
@@ -16,7 +17,7 @@ export class BorshSchema {
   }
 
   private unexpectedKind(): never {
-    throw Error(`Unexpected kind: ${this.internal.kind}`);
+    throw new BorshSchemaError(`Unexpected kind: ${this.internal.kind}`);
   }
 
   private static fromOptionType(schema: OptionType): BorshSchema {
@@ -192,7 +193,7 @@ export class BorshSchema {
       }
     }
 
-    throw Error(`Unexpected schema: ${JSON.stringify(schema)}`);
+    throw new BorshSchemaError(`Unexpected schema: ${JSON.stringify(schema)}`);
   }
 
   /**
