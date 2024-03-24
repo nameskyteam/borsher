@@ -2,10 +2,10 @@ import { Schema } from 'borsh';
 import { ArrayType, EnumType, MapType, OptionType, SetType, StructType } from 'borsh/lib/types/types';
 import { BorshSchemaInternal, EnumVariants, StructFields } from './types';
 import {
-  convertEnumTypeVariantsToEnumVariants,
   convertStructTypeFieldsToStructFields,
-  convertEnumVariantsToEnumTypeVariants,
   convertStructFieldsToStructTypeFields,
+  convertEnumTypeVariantsToEnumVariants,
+  convertEnumVariantsToEnumTypeVariants,
 } from './utils';
 
 export class BorshSchema {
