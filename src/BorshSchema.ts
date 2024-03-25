@@ -6,6 +6,7 @@ import {
   convertStructFieldsToStructTypeFields,
   convertEnumTypeVariantsToEnumVariants,
   convertEnumVariantsToEnumTypeVariants,
+  unreachable,
 } from './utils';
 import { BorshSchemaError } from './errors';
 
@@ -193,7 +194,7 @@ export class BorshSchema {
       }
     }
 
-    throw new BorshSchemaError(`Unexpected schema: ${JSON.stringify(schema)}`);
+    unreachable();
   }
 
   /**
@@ -280,7 +281,7 @@ export class BorshSchema {
       return this.toEnumType();
     }
 
-    this.unexpectedKind();
+    unreachable();
   }
 
   /**

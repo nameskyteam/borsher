@@ -1,6 +1,11 @@
 import { EnumTypeVariants, EnumVariants, StructFields, StructTypeFields } from './types';
 import { Schema } from 'borsh';
 import { BorshSchema } from './BorshSchema';
+import { UnreachableError } from './errors';
+
+export function unreachable(): never {
+  throw new UnreachableError();
+}
 
 export function convertStructTypeFieldsToStructFields(fields: StructTypeFields): StructFields {
   const entries: [string, BorshSchema][] = Object.entries(fields).map(([key, value]) => [

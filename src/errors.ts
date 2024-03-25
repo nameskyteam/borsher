@@ -3,3 +3,9 @@ export class BorshSchemaError extends Error {
     super(message);
   }
 }
+
+export class UnreachableError extends Error {
+  constructor() {
+    super();
+  }
+}
