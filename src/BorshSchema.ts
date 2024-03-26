@@ -1,6 +1,6 @@
 import { Schema } from 'borsh';
 import { ArrayType, EnumType, MapType, OptionType, SetType, StructType } from 'borsh/lib/types/types';
-import { BorshSchemaInternal, EnumVariants, StructFields } from './types';
+import { EnumVariants, StructFields } from './types';
 import {
   convertStructTypeFieldsToStructFields,
   convertStructFieldsToStructTypeFields,
@@ -593,3 +593,26 @@ export class BorshSchema {
     return new BorshSchema({ kind: 'Enum', Enum: { variants } });
   }
 }
+
+type BorshSchemaInternal =
+  | { kind: 'u8' }
+  | { kind: 'u16' }
+  | { kind: 'u32' }
+  | { kind: 'u64' }
+  | { kind: 'u128' }
+  | { kind: 'i8' }
+  | { kind: 'i16' }
+  | { kind: 'i32' }
+  | { kind: 'i64' }
+  | { kind: 'i128' }
+  | { kind: 'f32' }
+  | { kind: 'f64' }
+  | { kind: 'bool' }
+  | { kind: 'String' }
+  | { kind: 'Array'; Array: { value: BorshSchema; length: number } }
+  | { kind: 'Vec'; Vec: { value: BorshSchema } }
+  | { kind: 'HashSet'; HashSet: { value: BorshSchema } }
+  | { kind: 'HashMap'; HashMap: { key: BorshSchema; value: BorshSchema } }
+  | { kind: 'Option'; Option: { value: BorshSchema } }
+  | { kind: 'Struct'; Struct: { fields: StructFields } }
+  | { kind: 'Enum'; Enum: { variants: EnumVariants } };
