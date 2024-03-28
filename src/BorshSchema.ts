@@ -9,7 +9,7 @@ export class BorshSchema {
     this.schema = schema;
   }
 
-  static fromSchema(schema: Schema) {
+  static fromSchema(schema: Schema): BorshSchema {
     return new BorshSchema(schema);
   }
 
@@ -18,7 +18,7 @@ export class BorshSchema {
   }
 
   /**
-   * Schema for u8.
+   * Schema for u8
    * @example
    * const n: number = 100;
    * const buffer = borshSerialize(BorshSchema.u8, n);
@@ -28,7 +28,7 @@ export class BorshSchema {
   }
 
   /**
-   * Schema for u16.
+   * Schema for u16
    * @example
    * const n: number = 100;
    * const buffer = borshSerialize(BorshSchema.u16, n);
@@ -38,7 +38,7 @@ export class BorshSchema {
   }
 
   /**
-   * Schema for u32.
+   * Schema for u32
    * @example
    * const n: number = 100;
    * const buffer = borshSerialize(BorshSchema.u32, n);
@@ -48,7 +48,7 @@ export class BorshSchema {
   }
 
   /**
-   * Schema for u64.
+   * Schema for u64
    * @example
    * const n: bigint = 100n;
    * const buffer = borshSerialize(BorshSchema.u64, n);
@@ -58,7 +58,7 @@ export class BorshSchema {
   }
 
   /**
-   * Schema for u128.
+   * Schema for u128
    * @example
    * const n: bigint = 100n;
    * const buffer = borshSerialize(BorshSchema.u128, n);
@@ -68,7 +68,7 @@ export class BorshSchema {
   }
 
   /**
-   * Schema for i8.
+   * Schema for i8
    * @example
    * const n: number = 100;
    * const buffer = borshSerialize(BorshSchema.i8, n);
@@ -78,7 +78,7 @@ export class BorshSchema {
   }
 
   /**
-   * Schema for i16.
+   * Schema for i16
    * @example
    * const n: number = 100;
    * const buffer = borshSerialize(BorshSchema.i16, n);
@@ -88,7 +88,7 @@ export class BorshSchema {
   }
 
   /**
-   * Schema for i32.
+   * Schema for i32
    * @example
    * const n: number = 100;
    * const buffer = borshSerialize(BorshSchema.i32, n);
@@ -98,7 +98,7 @@ export class BorshSchema {
   }
 
   /**
-   * Schema for i64.
+   * Schema for i64
    * @example
    * const n: bigint = 100n;
    * const buffer = borshSerialize(BorshSchema.i64, n);
@@ -108,7 +108,7 @@ export class BorshSchema {
   }
 
   /**
-   * Schema for i128.
+   * Schema for i128
    * @example
    * const n: bigint = 100n;
    * const buffer = borshSerialize(BorshSchema.i128, n);
@@ -118,7 +118,7 @@ export class BorshSchema {
   }
 
   /**
-   * Schema for f32.
+   * Schema for f32
    * @example
    * const n: number = 1.0;
    * const buffer = borshSerialize(BorshSchema.f32, n);
@@ -128,7 +128,7 @@ export class BorshSchema {
   }
 
   /**
-   * Schema for f64.
+   * Schema for f64
    * @example
    * const n: number = 1.0;
    * const buffer = borshSerialize(BorshSchema.f64, n);
@@ -138,7 +138,7 @@ export class BorshSchema {
   }
 
   /**
-   * Schema for bool.
+   * Schema for bool
    * @example
    * const b: boolean = true;
    * const buffer = borshSerialize(BorshSchema.bool, b);
@@ -148,7 +148,7 @@ export class BorshSchema {
   }
 
   /**
-   * Schema for String.
+   * Schema for String
    * @example
    * const message: string = 'hello world';
    * const buffer = borshSerialize(BorshSchema.String, message);
@@ -158,7 +158,7 @@ export class BorshSchema {
   }
 
   /**
-   * Schema for Option.
+   * Schema for Option
    * @example
    * const schema = BorshSchema.Option(BorshSchema.String);
    *
@@ -173,7 +173,7 @@ export class BorshSchema {
   }
 
   /**
-   * Schema for Array.
+   * Schema for Array
    * @example
    * const schema = BorshSchema.Array(BorshSchema.String, 2);
    * const messages: string[] = ['hello', 'world'];
@@ -184,7 +184,7 @@ export class BorshSchema {
   }
 
   /**
-   * Schema for Vec.
+   * Schema for Vec
    * @example
    * const schema = BorshSchema.Vec(BorshSchema.String);
    * const messages: string[] = ['hello', 'world'];
@@ -195,7 +195,7 @@ export class BorshSchema {
   }
 
   /**
-   * Schema for HashSet.
+   * Schema for HashSet
    * @example
    * const schema = BorshSchema.HashSet(BorshSchema.String);
    * const messages: Set<string> = new Set(['hello', 'world']);
@@ -206,7 +206,7 @@ export class BorshSchema {
   }
 
   /**
-   * Schema for HashMap.
+   * Schema for HashMap
    * @example
    * const schema = BorshSchema.HashMap(BorshSchema.String, BorshSchema.u128);
    * const balances: Map<string, bigint> = new Map([
@@ -220,7 +220,7 @@ export class BorshSchema {
   }
 
   /**
-   * Schema for Unit.
+   * Schema for Unit
    * @example
    * const unit: Unit = {};
    * const buffer = borshSerialize(BorshSchema.Unit, unit);
@@ -230,7 +230,7 @@ export class BorshSchema {
   }
 
   /**
-   * Schema for Struct.
+   * Schema for Struct
    * @example
    * type Person = {
    *   name: string;
@@ -254,7 +254,7 @@ export class BorshSchema {
   }
 
   /**
-   * Schema for Enum.
+   * Schema for Enum
    * @example
    * type Status =
    *   | {
