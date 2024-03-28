@@ -13,8 +13,8 @@
   "scripts": {
     "build": "rm -rf dist && tsc",
     "test": "jest",
-    "lint": "eslint src/**/*.ts --fix",
-    "prettier": "prettier src/**/*.ts --write",
+    "lint": "eslint {src,test}/*.ts --fix",
+    "prettier": "prettier {src,test}/*.ts --write",
     "prepare": "husky"
   },
   "dependencies": {
@@ -46,11 +46,11 @@
     "printWidth": 120
   },
   "lint-staged": {
-    "src/**/*.ts": [
+    "src/*.ts": [
       "eslint --fix",
       "prettier --write"
     ],
-    "test/**/*.ts": [
+    "test/*.ts": [
       "eslint --fix",
       "prettier --write"
     ]
