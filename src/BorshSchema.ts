@@ -250,7 +250,7 @@ export class BorshSchema {
    * const buffer = borshSerialize(schema, person);
    */
   static Struct(fields: StructFields): BorshSchema {
-    return BorshSchema.fromSchema({ struct: fromStructFields(fields) });
+    return BorshSchema.fromSchema({ struct: toStructTypeStruct(fields) });
   }
 
   /**
@@ -314,15 +314,15 @@ export class BorshSchema {
    * const buffer = borshSerialize(schema, shape);
    */
   static Enum(variants: EnumVariants): BorshSchema {
-    return BorshSchema.fromSchema({ enum: fromEnumVariants(variants) });
+    return BorshSchema.fromSchema({ enum: toEnumTypeEnum(variants) });
   }
 }
 
-function fromStructFields(fields: StructFields): StructType['struct'] {
+function toStructTypeStruct(fields: StructFields): StructType['struct'] {
   const entries = Object.entries(fields).map<[string, Schema]>(([key, value]) => [key, value.toSchema()]);
   return Object.fromEntries(entries);
 }
 
-function fromEnumVariants(variants: EnumVariants): EnumType['enum'] {
+function toEnumTypeEnum(variants: EnumVariants): EnumType['enum'] {
   return Object.entries(variants).map<StructType>(([key, value]) => ({ struct: { [key]: value.toSchema() } }));
 }
