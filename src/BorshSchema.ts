@@ -1,5 +1,4 @@
 import { Schema } from 'borsh';
-import { EnumVariants, StructFields } from './types';
 import { EnumType, StructType } from 'borsh/lib/types/types';
 
 export class BorshSchema {
@@ -326,3 +325,9 @@ function toStructTypeStruct(fields: StructFields): StructType['struct'] {
 function toEnumTypeEnum(variants: EnumVariants): EnumType['enum'] {
   return Object.entries(variants).map<StructType>(([key, value]) => ({ struct: { [key]: value.toSchema() } }));
 }
+
+export type Unit = Record<string, never>;
+
+export type StructFields = Record<string, BorshSchema>;
+
+export type EnumVariants = Record<string, BorshSchema>;
