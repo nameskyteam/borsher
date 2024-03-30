@@ -5,7 +5,7 @@ Borsher wraps the [Borsh JS](https://github.com/near/borsh-js) and simplifies th
 
 ## Install
 ```shell
-yarn add borsher
+pnpm add borsher
 ```
 
 ## Usage

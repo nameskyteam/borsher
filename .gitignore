@@ -109,8 +109,5 @@ dataset/local
 # Local files
 .DS_Store
 
-# idea
+# JetBrains IDE
 .idea
-
-# vscode
-.vscode
