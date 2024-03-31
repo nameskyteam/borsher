@@ -1,6 +1,0 @@
-{
-  "*.ts": [
-    "pnpm lint --",
-    "pnpm prettier --"
-  ]
-}

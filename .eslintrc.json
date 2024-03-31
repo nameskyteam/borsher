@@ -9,7 +9,6 @@
     "plugin:@typescript-eslint/recommended"
   ],
   "rules": {
-    "eol-last": 2,
-    "@typescript-eslint/no-inferrable-types": "off"
+    "eol-last": "error"
   }
 }
