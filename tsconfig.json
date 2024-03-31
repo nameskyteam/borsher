@@ -24,8 +24,7 @@
     // significant perf increase by skipping checking .d.ts files, particularly those in node_modules. Recommended by TS
     "skipLibCheck": true,
     // error out if import and file system have a casing mismatch. Recommended by TS
-    "forceConsistentCasingInFileNames": true,
-    "experimentalDecorators": true
+    "forceConsistentCasingInFileNames": true
   },
   "include": ["src"]
 }
