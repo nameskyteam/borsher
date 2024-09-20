@@ -12,9 +12,10 @@
   ],
   "scripts": {
     "build": "rm -rf dist && tsc",
+    "check": "tsc --noEmit",
     "test": "jest",
-    "lint": "eslint {src,test}/{**,}/*.ts --fix",
-    "prettier": "prettier {src,test}/{**,}/*.ts --write",
+    "lint": "eslint '{src,test}/**/*.ts' --fix",
+    "prettier": "prettier '{src,test}/**/*.ts' --write --list-different",
     "prepare": "husky"
   },
   "dependencies": {
