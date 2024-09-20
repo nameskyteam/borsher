@@ -7,8 +7,7 @@
   "types": "dist/index.d.ts",
   "type": "commonjs",
   "files": [
-    "dist",
-    "src"
+    "dist"
   ],
   "scripts": {
     "build": "rm -rf dist && tsc",
