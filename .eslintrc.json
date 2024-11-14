@@ -9,6 +9,12 @@
     "plugin:@typescript-eslint/recommended"
   ],
   "rules": {
-    "eol-last": "error"
+    "eol-last": "error",
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      {
+        "varsIgnorePattern": "^_"
+      }
+    ]
   }
 }
