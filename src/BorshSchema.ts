@@ -179,7 +179,9 @@ export class BorshSchema {
    * const buffer = borshSerialize(schema, messages);
    */
   static Array(value: BorshSchema, length: number): BorshSchema {
-    return BorshSchema.fromSchema({ array: { type: value.toSchema(), len: length } });
+    return BorshSchema.fromSchema({
+      array: { type: value.toSchema(), len: length },
+    });
   }
 
   /**
@@ -215,7 +217,9 @@ export class BorshSchema {
    * const buffer = borshSerialize(schema, balances);
    */
   static HashMap(key: BorshSchema, value: BorshSchema): BorshSchema {
-    return BorshSchema.fromSchema({ map: { key: key.toSchema(), value: value.toSchema() } });
+    return BorshSchema.fromSchema({
+      map: { key: key.toSchema(), value: value.toSchema() },
+    });
   }
 
   /**
@@ -318,12 +322,16 @@ export class BorshSchema {
 }
 
 function parseStructTypeStruct(fields: StructFields): StructType['struct'] {
-  const entries = Object.entries(fields).map<[string, Schema]>(([key, value]) => [key, value.toSchema()]);
+  const entries = Object.entries(fields).map<[string, Schema]>(
+    ([key, value]) => [key, value.toSchema()],
+  );
   return Object.fromEntries(entries);
 }
 
 function parseEnumTypeEnum(variants: EnumVariants): EnumType['enum'] {
-  return Object.entries(variants).map<StructType>(([key, value]) => ({ struct: { [key]: value.toSchema() } }));
+  return Object.entries(variants).map<StructType>(([key, value]) => ({
+    struct: { [key]: value.toSchema() },
+  }));
 }
 
 export type Unit = Record<string, never>;

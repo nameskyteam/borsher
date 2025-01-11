@@ -10,4 +10,11 @@ function borshDeserialize<T>(schema: BorshSchema, buffer: Uint8Array): T {
   return deserialize(schema.toSchema(), buffer) as T;
 }
 
-export { borshSerialize, borshDeserialize, BorshSchema, EnumVariants, StructFields, Unit };
+export {
+  borshSerialize,
+  borshDeserialize,
+  BorshSchema,
+  EnumVariants,
+  StructFields,
+  Unit,
+};
