@@ -1,5 +1,4 @@
 import { Schema } from 'borsh';
-import { EnumType, StructType } from 'borsh/lib/types/types';
 
 export class BorshSchema {
   private readonly schema: Schema;
@@ -253,7 +252,8 @@ export class BorshSchema {
    * const buffer = borshSerialize(schema, person);
    */
   static Struct(fields: StructFields): BorshSchema {
-    return BorshSchema.fromSchema({ struct: parseStructTypeStruct(fields) });
+    const schema = parseStructSchema(fields);
+    return BorshSchema.fromSchema(schema);
   }
 
   /**
@@ -317,21 +317,26 @@ export class BorshSchema {
    * const buffer = borshSerialize(schema, shape);
    */
   static Enum(variants: EnumVariants): BorshSchema {
-    return BorshSchema.fromSchema({ enum: parseEnumTypeEnum(variants) });
+    const schema = parseEnumSchema(variants);
+    return BorshSchema.fromSchema(schema);
   }
 }
 
-function parseStructTypeStruct(fields: StructFields): StructType['struct'] {
+function parseStructSchema(fields: StructFields): Schema {
   const entries = Object.entries(fields).map<[string, Schema]>(
     ([key, value]) => [key, value.toSchema()],
   );
-  return Object.fromEntries(entries);
+  return {
+    struct: Object.fromEntries(entries),
+  };
 }
 
-function parseEnumTypeEnum(variants: EnumVariants): EnumType['enum'] {
-  return Object.entries(variants).map<StructType>(([key, value]) => ({
-    struct: { [key]: value.toSchema() },
-  }));
+function parseEnumSchema(variants: EnumVariants): Schema {
+  return {
+    enum: Object.entries(variants).map(([key, value]) => ({
+      struct: { [key]: value.toSchema() },
+    })),
+  };
 }
 
 export type Unit = Record<string, never>;
