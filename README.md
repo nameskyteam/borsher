@@ -10,7 +10,7 @@ pnpm add borsher
 
 ## Usage
 ```ts
-import { BorshSchema, borshSerialize, borshDeserialize, Unit } from 'borsher';
+import { borshSerialize, borshDeserialize, BorshSchema, Unit } from 'borsher';
 ```
 
 ### u8

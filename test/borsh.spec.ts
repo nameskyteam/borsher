@@ -1,4 +1,4 @@
-import { BorshSchema, borshSerialize, borshDeserialize, Unit } from '../src';
+import { borshSerialize, borshDeserialize, BorshSchema, Unit } from '../src';
 
 test('u8', () => {
   const schema = BorshSchema.u8;

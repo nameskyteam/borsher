@@ -1,20 +1,15 @@
 import { Buffer } from 'buffer';
-import { BorshSchema, EnumVariants, StructFields, Unit } from './BorshSchema';
-import { serialize, deserialize } from 'borsh';
+import { BorshSchema } from './schema';
 
-function borshSerialize<T>(schema: BorshSchema, data: T): Buffer {
-  return Buffer.from(serialize(schema.toSchema(), data));
+export function borshSerialize<T>(schema: BorshSchema, value: T): Buffer {
+  return BorshSchema.serialize(schema, value);
 }
 
-function borshDeserialize<T>(schema: BorshSchema, buffer: Uint8Array): T {
-  return deserialize(schema.toSchema(), buffer) as T;
+export function borshDeserialize<T>(
+  schema: BorshSchema,
+  buffer: Uint8Array,
+): T {
+  return BorshSchema.deserialize(schema, buffer);
 }
 
-export {
-  borshSerialize,
-  borshDeserialize,
-  BorshSchema,
-  EnumVariants,
-  StructFields,
-  Unit,
-};
+export { BorshSchema, EnumVariants, StructFields, Unit } from './schema';
