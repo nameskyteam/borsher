@@ -17,7 +17,7 @@ export {
   StructFields,
   EnumVariants,
   Unit,
-  Infer,
-  InferStruct,
-  InferEnum,
+  Typeof,
+  TypeofStruct,
+  TypeofEnum,
 } from './schema';

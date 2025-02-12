@@ -286,7 +286,7 @@ export class BorshSchema<
    */
   static Struct<Fields extends StructFields>(
     fields: Fields,
-  ): BorshSchema<InferStruct<Fields>> {
+  ): BorshSchema<TypeofStruct<Fields>> {
     const schema = BorshSchema.parseStructSchema(fields);
     return BorshSchema.fromSchema(schema);
   }
@@ -353,7 +353,7 @@ export class BorshSchema<
    */
   static Enum<Variants extends EnumVariants>(
     variants: Variants,
-  ): BorshSchema<InferEnum<Variants>> {
+  ): BorshSchema<TypeofEnum<Variants>> {
     const schema = BorshSchema.parseEnumSchema(variants);
     return BorshSchema.fromSchema(schema);
   }
@@ -365,16 +365,16 @@ export type EnumVariants = Record<string, BorshSchema<unknown>>;
 
 export type Unit = Record<string, never>;
 
-export type Infer<S> = S extends BorshSchema<infer T> ? T : never;
+export type Typeof<S> = S extends BorshSchema<infer T> ? T : never;
 
-export type InferStruct<Fields> = Fields extends StructFields
+export type TypeofStruct<Fields> = Fields extends StructFields
   ? {
-      [K in keyof Fields]: Infer<Fields[K]>;
+      [K in keyof Fields]: Typeof<Fields[K]>;
     }
   : never;
 
-export type InferEnum<Variants> = Variants extends EnumVariants
+export type TypeofEnum<Variants> = Variants extends EnumVariants
   ? {
-      [K in keyof Variants]: { [_K in K]: Infer<Variants[K]> };
+      [K in keyof Variants]: { [_K in K]: Typeof<Variants[K]> };
     }[keyof Variants]
   : never;
