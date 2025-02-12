@@ -16,23 +16,6 @@ export class BorshSchema<T> {
     return this.schema;
   }
 
-  private static parseStructSchema(fields: StructFields): borsh.Schema {
-    const entries = Object.entries(fields).map<[string, borsh.Schema]>(
-      ([key, value]) => [key, value.toSchema()],
-    );
-    return {
-      struct: Object.fromEntries(entries),
-    };
-  }
-
-  private static parseEnumSchema(variants: EnumVariants): borsh.Schema {
-    return {
-      enum: Object.entries(variants).map(([key, value]) => ({
-        struct: { [key]: value.toSchema() },
-      })),
-    };
-  }
-
   serialize(value: T): Buffer {
     const buffer = borsh.serialize(this.toSchema(), value);
     return Buffer.from(buffer);
@@ -377,6 +360,27 @@ export class BorshSchema<T> {
   ): BorshSchema<InferEnum<Variants>> {
     const schema = BorshSchema.parseEnumSchema(variants);
     return BorshSchema.fromSchemaUnchecked(schema);
+  }
+
+  private static parseStructSchema<Fields extends StructFields>(
+    fields: Fields,
+  ): borsh.Schema {
+    const entries = Object.entries(fields).map<[string, borsh.Schema]>(
+      ([key, value]) => [key, value.toSchema()],
+    );
+    return {
+      struct: Object.fromEntries(entries),
+    };
+  }
+
+  private static parseEnumSchema<Variants extends EnumVariants>(
+    variants: Variants,
+  ): borsh.Schema {
+    return {
+      enum: Object.entries(variants).map(([key, value]) => ({
+        struct: { [key]: value.toSchema() },
+      })),
+    };
   }
 }
 
