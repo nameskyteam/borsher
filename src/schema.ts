@@ -18,6 +18,23 @@ export class BorshSchema<
     return this.schema;
   }
 
+  private static parseStructSchema(fields: StructFields): borsh.Schema {
+    const entries = Object.entries(fields).map<[string, borsh.Schema]>(
+      ([key, value]) => [key, value.toSchema()],
+    );
+    return {
+      struct: Object.fromEntries(entries),
+    };
+  }
+
+  private static parseEnumSchema(variants: EnumVariants): borsh.Schema {
+    return {
+      enum: Object.entries(variants).map(([key, value]) => ({
+        struct: { [key]: value.toSchema() },
+      })),
+    };
+  }
+
   static serialize<T>(schema: BorshSchema<T>, value: T): Buffer {
     const buffer = borsh.serialize(schema.toSchema(), value);
     return Buffer.from(buffer);
@@ -274,15 +291,6 @@ export class BorshSchema<
     return BorshSchema.fromSchema(schema);
   }
 
-  private static parseStructSchema(fields: StructFields): borsh.Schema {
-    const entries = Object.entries(fields).map<[string, borsh.Schema]>(
-      ([key, value]) => [key, value.toSchema()],
-    );
-    return {
-      struct: Object.fromEntries(entries),
-    };
-  }
-
   /**
    * Schema for Enum
    * @example
@@ -348,14 +356,6 @@ export class BorshSchema<
   ): BorshSchema<InferEnum<Variants>> {
     const schema = BorshSchema.parseEnumSchema(variants);
     return BorshSchema.fromSchema(schema);
-  }
-
-  private static parseEnumSchema(variants: EnumVariants): borsh.Schema {
-    return {
-      enum: Object.entries(variants).map(([key, value]) => ({
-        struct: { [key]: value.toSchema() },
-      })),
-    };
   }
 }
 
