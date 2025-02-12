@@ -267,14 +267,14 @@ export class BorshSchema<
    *
    * const buffer = borshSerialize(schema, person);
    */
-  static Struct<Fields extends BorshSchemaRecord>(
+  static Struct<Fields extends StructFields>(
     fields: Fields,
   ): BorshSchema<InferStruct<Fields>> {
     const schema = BorshSchema.parseStructSchema(fields);
     return BorshSchema.fromSchema(schema);
   }
 
-  private static parseStructSchema<Fields extends BorshSchemaRecord>(
+  private static parseStructSchema<Fields extends StructFields>(
     fields: Fields,
   ): borsh.Schema {
     const entries = Object.entries(fields).map<[string, borsh.Schema]>(
@@ -345,14 +345,14 @@ export class BorshSchema<
    *
    * const buffer = borshSerialize(schema, shape);
    */
-  static Enum<Variants extends BorshSchemaRecord>(
+  static Enum<Variants extends EnumVariants>(
     variants: Variants,
   ): BorshSchema<InferEnum<Variants>> {
     const schema = BorshSchema.parseEnumSchema(variants);
     return BorshSchema.fromSchema(schema);
   }
 
-  private static parseEnumSchema<Variants extends BorshSchemaRecord>(
+  private static parseEnumSchema<Variants extends EnumVariants>(
     variants: Variants,
   ): borsh.Schema {
     return {
@@ -363,20 +363,22 @@ export class BorshSchema<
   }
 }
 
-export type BorshSchemaRecord = Record<string, BorshSchema<unknown>>;
+export type StructFields = Record<string, BorshSchema<unknown>>;
+
+export type EnumVariants = Record<string, BorshSchema<unknown>>;
+
+export type Unit = Record<string, never>;
 
 export type Infer<S> = S extends BorshSchema<infer T> ? T : never;
 
-export type InferStruct<Fields> = Fields extends BorshSchemaRecord
+export type InferStruct<Fields> = Fields extends StructFields
   ? {
       [K in keyof Fields]: Infer<Fields[K]>;
     }
   : never;
 
-export type InferEnum<Variants> = Variants extends BorshSchemaRecord
+export type InferEnum<Variants> = Variants extends EnumVariants
   ? {
       [K in keyof Variants]: { [_K in K]: Infer<Variants[K]> };
     }[keyof Variants]
   : never;
-
-export type Unit = Record<string, never>;

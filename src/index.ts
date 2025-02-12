@@ -14,9 +14,10 @@ export function borshDeserialize<T>(
 
 export {
   BorshSchema,
-  BorshSchemaRecord,
+  StructFields,
+  EnumVariants,
+  Unit,
   Infer,
   InferStruct,
   InferEnum,
-  Unit,
 } from './schema';
