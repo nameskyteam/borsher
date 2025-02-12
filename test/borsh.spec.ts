@@ -191,7 +191,7 @@ test('Struct', () => {
   expect(person).toEqual(deserialized);
 });
 
-test('Enum Without Associated Type', () => {
+test('Enum', () => {
   type Status =
     | {
         Pending: Unit;
@@ -219,7 +219,7 @@ test('Enum Without Associated Type', () => {
   expect(status).toEqual(deserialized);
 });
 
-test('Enum With Associated Type', () => {
+test('Enum Associated', () => {
   type Shape =
     | {
         Square: number;

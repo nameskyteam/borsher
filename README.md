@@ -165,7 +165,7 @@ const person: Person = {
 const buffer = borshSerialize(schema, person);
 ```
 
-### Enum Without Associated Type
+### Enum
 ```ts
 type Status = 
   | {
@@ -191,7 +191,7 @@ const status: Status = {
 const buffer = borshSerialize(schema, status);
 ```
 
-### Enum With Associated Type
+### Enum Associated
 ```ts
 type Shape =
   | {
