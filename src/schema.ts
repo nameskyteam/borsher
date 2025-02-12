@@ -377,7 +377,7 @@ type InferStruct<Fields> = Fields extends StructFields
 
 type InferEnum<Variants> = Variants extends EnumVariants
   ? {
-      [K in keyof Variants]: { [_K in K]: Infer<Variants[K]> };
+      [K in keyof Variants]: { [P in K]: Infer<Variants[P]> };
     }[keyof Variants]
   : never;
 
