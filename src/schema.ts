@@ -274,9 +274,7 @@ export class BorshSchema<
     return BorshSchema.fromSchema(schema);
   }
 
-  private static parseStructSchema<Fields extends StructFields>(
-    fields: Fields,
-  ): borsh.Schema {
+  private static parseStructSchema(fields: StructFields): borsh.Schema {
     const entries = Object.entries(fields).map<[string, borsh.Schema]>(
       ([key, value]) => [key, value.toSchema()],
     );
@@ -352,9 +350,7 @@ export class BorshSchema<
     return BorshSchema.fromSchema(schema);
   }
 
-  private static parseEnumSchema<Variants extends EnumVariants>(
-    variants: Variants,
-  ): borsh.Schema {
+  private static parseEnumSchema(variants: EnumVariants): borsh.Schema {
     return {
       enum: Object.entries(variants).map(([key, value]) => ({
         struct: { [key]: value.toSchema() },
