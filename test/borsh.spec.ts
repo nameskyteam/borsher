@@ -2,8 +2,8 @@ import {
   borshSerialize,
   borshDeserialize,
   BorshSchema,
-  Unit,
   Infer,
+  Unit,
 } from '../src';
 
 test('u8', () => {

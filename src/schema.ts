@@ -365,7 +365,9 @@ export class BorshSchema<
   }
 }
 
-export type Unit = Record<string, never>;
+type StructFields = Record<string, BorshSchema<unknown>>;
+
+type EnumVariants = Record<string, BorshSchema<unknown>>;
 
 export type Infer<S> = S extends BorshSchema<infer T> ? T : never;
 
@@ -381,6 +383,4 @@ type InferEnum<Variants> = Variants extends EnumVariants
     }[keyof Variants]
   : never;
 
-type StructFields = Record<string, BorshSchema<unknown>>;
-
-type EnumVariants = Record<string, BorshSchema<unknown>>;
+export type Unit = Record<string, never>;
