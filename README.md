@@ -152,10 +152,12 @@ const schema = BorshSchema.Struct({
   age: BorshSchema.u8,
 });
 
-type Person = {
-  name: string;
-  age: number;
-};
+type Person = Infer<typeof schema>;
+
+// type Person = {
+//   name: string;
+//   age: number;
+// };
 
 const person: Person = {
   name: 'alice',
@@ -173,16 +175,18 @@ const schema = BorshSchema.Enum({
   Rejected: BorshSchema.Unit,
 });
 
-type Status =
-  | {
-  Pending: Unit;
-}
-  | {
-  Fulfilled: Unit;
-}
-  | {
-  Rejected: Unit;
-};
+type Status = Infer<typeof schema>;
+
+// type Status =
+//   | {
+//   Pending: Unit;
+// }
+//   | {
+//   Fulfilled: Unit;
+// }
+//   | {
+//   Rejected: Unit;
+// };
 
 const status: Status = {
   Pending: {},
@@ -204,21 +208,23 @@ const schema = BorshSchema.Enum({
   }),
 });
 
-type Shape =
-  | {
-  Square: number;
-}
-  | {
-  Rectangle: {
-    length: number;
-    width: number;
-  };
-}
-  | {
-  Circle: {
-    radius: number;
-  };
-};
+type Shape = Infer<typeof schema>;
+
+// type Shape =
+//   | {
+//   Square: number;
+// }
+//   | {
+//   Rectangle: {
+//     length: number;
+//     width: number;
+//   };
+// }
+//   | {
+//   Circle: {
+//     radius: number;
+//   };
+// };
 
 const shape: Shape = {
   Square: 5,

@@ -12,12 +12,4 @@ export function borshDeserialize<T>(
   return BorshSchema.deserialize(schema, buffer);
 }
 
-export {
-  BorshSchema,
-  StructFields,
-  EnumVariants,
-  Unit,
-  Typeof,
-  TypeofStruct,
-  TypeofEnum,
-} from './schema';
+export { BorshSchema, Unit, Infer } from './schema';

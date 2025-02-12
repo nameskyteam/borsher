@@ -272,10 +272,12 @@ export class BorshSchema<
    *   age: BorshSchema.u8,
    * });
    *
-   * type Person = {
-   *   name: string;
-   *   age: number;
-   * };
+   * type Person = Infer<typeof schema>;
+   *
+   * // type Person = {
+   * //   name: string;
+   * //   age: number;
+   * // };
    *
    * const person: Person = {
    *   name: 'alice',
@@ -286,7 +288,7 @@ export class BorshSchema<
    */
   static Struct<Fields extends StructFields>(
     fields: Fields,
-  ): BorshSchema<TypeofStruct<Fields>> {
+  ): BorshSchema<InferStruct<Fields>> {
     const schema = BorshSchema.parseStructSchema(fields);
     return BorshSchema.fromSchema(schema);
   }
@@ -300,16 +302,18 @@ export class BorshSchema<
    *   Rejected: BorshSchema.Unit,
    * });
    *
-   * type Status =
-   *   | {
-   *       Pending: Unit;
-   *     }
-   *   | {
-   *       Fulfilled: Unit;
-   *     }
-   *   | {
-   *       Rejected: Unit;
-   *     };
+   * type Status = Infer<typeof schema>;
+   *
+   * // type Status =
+   * //   | {
+   * //   Pending: Unit;
+   * // }
+   * //   | {
+   * //   Fulfilled: Unit;
+   * // }
+   * //   | {
+   * //   Rejected: Unit;
+   * // };
    *
    * const status: Status = {
    *   Pending: {},
@@ -329,21 +333,23 @@ export class BorshSchema<
    *   }),
    * });
    *
-   * type Shape =
-   *   | {
-   *       Square: number;
-   *     }
-   *   | {
-   *       Rectangle: {
-   *         length: number;
-   *         width: number;
-   *       };
-   *     }
-   *   | {
-   *       Circle: {
-   *         radius: number;
-   *       };
-   *     };
+   * type Shape = Infer<typeof schema>;
+   *
+   * // type Shape =
+   * //   | {
+   * //   Square: number;
+   * // }
+   * //   | {
+   * //   Rectangle: {
+   * //     length: number;
+   * //     width: number;
+   * //   };
+   * // }
+   * //   | {
+   * //   Circle: {
+   * //     radius: number;
+   * //   };
+   * // };
    *
    * const shape: Shape = {
    *   Square: 5,
@@ -353,28 +359,28 @@ export class BorshSchema<
    */
   static Enum<Variants extends EnumVariants>(
     variants: Variants,
-  ): BorshSchema<TypeofEnum<Variants>> {
+  ): BorshSchema<InferEnum<Variants>> {
     const schema = BorshSchema.parseEnumSchema(variants);
     return BorshSchema.fromSchema(schema);
   }
 }
 
-export type StructFields = Record<string, BorshSchema<unknown>>;
-
-export type EnumVariants = Record<string, BorshSchema<unknown>>;
-
 export type Unit = Record<string, never>;
 
-export type Typeof<S> = S extends BorshSchema<infer T> ? T : never;
+export type Infer<S> = S extends BorshSchema<infer T> ? T : never;
 
-export type TypeofStruct<Fields> = Fields extends StructFields
+type InferStruct<Fields> = Fields extends StructFields
   ? {
-      [K in keyof Fields]: Typeof<Fields[K]>;
+      [K in keyof Fields]: Infer<Fields[K]>;
     }
   : never;
 
-export type TypeofEnum<Variants> = Variants extends EnumVariants
+type InferEnum<Variants> = Variants extends EnumVariants
   ? {
-      [K in keyof Variants]: { [_K in K]: Typeof<Variants[K]> };
+      [K in keyof Variants]: { [_K in K]: Infer<Variants[K]> };
     }[keyof Variants]
   : never;
+
+type StructFields = Record<string, BorshSchema<unknown>>;
+
+type EnumVariants = Record<string, BorshSchema<unknown>>;
