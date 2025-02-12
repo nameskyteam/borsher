@@ -12,4 +12,11 @@ export function borshDeserialize<T>(
   return BorshSchema.deserialize(schema, buffer);
 }
 
-export { BorshSchema, Infer, Unit } from './schema';
+export {
+  BorshSchema,
+  BorshSchemaRecord,
+  Infer,
+  InferStruct,
+  InferEnum,
+  Unit,
+} from './schema';

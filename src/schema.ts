@@ -363,20 +363,20 @@ export class BorshSchema<
   }
 }
 
-export type Unit = Record<string, never>;
+export type BorshSchemaRecord = Record<string, BorshSchema<unknown>>;
 
 export type Infer<S> = S extends BorshSchema<infer T> ? T : never;
 
-type InferStruct<Fields> = Fields extends BorshSchemaRecord
+export type InferStruct<Fields> = Fields extends BorshSchemaRecord
   ? {
       [K in keyof Fields]: Infer<Fields[K]>;
     }
   : never;
 
-type InferEnum<Variants> = Variants extends BorshSchemaRecord
+export type InferEnum<Variants> = Variants extends BorshSchemaRecord
   ? {
       [K in keyof Variants]: { [_K in K]: Infer<Variants[K]> };
     }[keyof Variants]
   : never;
 
-type BorshSchemaRecord = Record<string, BorshSchema<unknown>>;
+export type Unit = Record<string, never>;
