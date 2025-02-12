@@ -1,9 +1,7 @@
 import { Buffer } from 'buffer';
 import * as borsh from 'borsh';
 
-export class BorshSchema<
-  /* eslint-disable @typescript-eslint/no-unused-vars */ T,
-> {
+export class BorshSchema<T> {
   private readonly schema: borsh.Schema;
 
   private constructor(schema: borsh.Schema) {
