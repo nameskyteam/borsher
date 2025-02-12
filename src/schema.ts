@@ -2,7 +2,7 @@ import { Buffer } from 'buffer';
 import * as borsh from 'borsh';
 
 export class BorshSchema<
-  /* eslint-disable @typescript-eslint/no-unused-vars */ _T,
+  /* eslint-disable @typescript-eslint/no-unused-vars */ T,
 > {
   private readonly schema: borsh.Schema;
 
