@@ -2,7 +2,7 @@ import { Buffer } from 'buffer';
 import * as borsh from 'borsh';
 
 export class BorshSchema<
-  /* eslint-disable @typescript-eslint/no-unused-vars */ _,
+  /* eslint-disable @typescript-eslint/no-unused-vars */ _T,
 > {
   private readonly schema: borsh.Schema;
 
@@ -365,7 +365,7 @@ export class BorshSchema<
 
 export type Unit = Record<string, never>;
 
-export type Infer<Schema> = Schema extends BorshSchema<infer T> ? T : never;
+export type Infer<S> = S extends BorshSchema<infer T> ? T : never;
 
 type InferStruct<Fields> = Fields extends BorshSchemaRecord
   ? {
@@ -375,7 +375,7 @@ type InferStruct<Fields> = Fields extends BorshSchemaRecord
 
 type InferEnum<Variants> = Variants extends BorshSchemaRecord
   ? {
-      [K in keyof Variants]: { [_ in K]: Infer<Variants[K]> };
+      [K in keyof Variants]: { [_K in K]: Infer<Variants[K]> };
     }[keyof Variants]
   : never;
 
