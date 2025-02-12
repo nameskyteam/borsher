@@ -15,86 +15,100 @@ import { borshSerialize, borshDeserialize, BorshSchema, Infer, Unit } from 'bors
 
 ### u8
 ```ts
+const schema = BorshSchema.u8;
 const n: number = 100;
-const buffer = borshSerialize(BorshSchema.u8, n);
+const buffer = borshSerialize(schema, n);
 ```
 
 ### u16
 ```ts
+const schema = BorshSchema.u16;
 const n: number = 100;
-const buffer = borshSerialize(BorshSchema.u16, n);
+const buffer = borshSerialize(schema, n);
 ```
 
 ### u32
 ```ts
+const schema = BorshSchema.u32;
 const n: number = 100;
-const buffer = borshSerialize(BorshSchema.u32, n);
+const buffer = borshSerialize(schema, n);
 ```
 
 ### u64
 ```ts
+const schema = BorshSchema.u64;
 const n: bigint = 100n;
-const buffer = borshSerialize(BorshSchema.u64, n);
+const buffer = borshSerialize(schema, n);
 ```
 
 ### u128
 ```ts
+const schema = BorshSchema.u128;
 const n: bigint = 100n;
-const buffer = borshSerialize(BorshSchema.u128, n);
+const buffer = borshSerialize(schema, n);
 ```
 
 ### i8
 ```ts
+const schema = BorshSchema.i8;
 const n: number = 100;
-const buffer = borshSerialize(BorshSchema.i8, n);
+const buffer = borshSerialize(schema, n);
 ```
 
 ### i16
 ```ts
+const schema = BorshSchema.i16;
 const n: number = 100;
-const buffer = borshSerialize(BorshSchema.i16, n);
+const buffer = borshSerialize(schema, n);
 ```
 
 ### i32
 ```ts
+const schema = BorshSchema.i32;
 const n: number = 100;
-const buffer = borshSerialize(BorshSchema.i32, n);
+const buffer = borshSerialize(schema, n);
 ```
 
 ### i64
 ```ts
+const schema = BorshSchema.i64;
 const n: bigint = 100n;
-const buffer = borshSerialize(BorshSchema.i64, n);
+const buffer = borshSerialize(schema, n);
 ```
 
 ### i128
 ```ts
+const schema = BorshSchema.i128;
 const n: bigint = 100n;
-const buffer = borshSerialize(BorshSchema.i128, n);
+const buffer = borshSerialize(schema, n);
 ```
 
 ### f32
 ```ts
+const schema = BorshSchema.f32;
 const n: number = 1.0;
-const buffer = borshSerialize(BorshSchema.f32, n);
+const buffer = borshSerialize(schema, n);
 ```
 
 ### f64
 ```ts
+const schema = BorshSchema.f64;
 const n: number = 1.0;
-const buffer = borshSerialize(BorshSchema.f64, n);
+const buffer = borshSerialize(schema, n);
 ```
 
 ### bool
 ```ts
+const schema = BorshSchema.bool;
 const b: boolean = true;
-const buffer = borshSerialize(BorshSchema.bool, b);
+const buffer = borshSerialize(schema, b);
 ```
 
 ### String
 ```ts
+const schema = BorshSchema.String;
 const message: string = 'hello world';
-const buffer = borshSerialize(BorshSchema.String, message);
+const buffer = borshSerialize(schema, message);
 ```
 
 ### Option
@@ -141,8 +155,9 @@ const buffer = borshSerialize(schema, balances);
 
 ### Unit
 ```ts
+const schema = BorshSchema.Unit;
 const unit: Unit = {};
-const buffer = borshSerialize(BorshSchema.Unit, unit);
+const buffer = borshSerialize(schema, unit);
 ```
 
 ### Struct
