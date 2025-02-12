@@ -10,7 +10,7 @@ export class BorshSchema<
     this.schema = schema;
   }
 
-  private static fromSchema<T>(schema: borsh.Schema): BorshSchema<T> {
+  private static fromSchemaUnchecked<T>(schema: borsh.Schema): BorshSchema<T> {
     return new BorshSchema(schema);
   }
 
@@ -52,7 +52,7 @@ export class BorshSchema<
    * const buffer = borshSerialize(BorshSchema.u8, n);
    */
   static get u8(): BorshSchema<number> {
-    return BorshSchema.fromSchema('u8');
+    return BorshSchema.fromSchemaUnchecked('u8');
   }
 
   /**
@@ -62,7 +62,7 @@ export class BorshSchema<
    * const buffer = borshSerialize(BorshSchema.u16, n);
    */
   static get u16(): BorshSchema<number> {
-    return BorshSchema.fromSchema('u16');
+    return BorshSchema.fromSchemaUnchecked('u16');
   }
 
   /**
@@ -72,7 +72,7 @@ export class BorshSchema<
    * const buffer = borshSerialize(BorshSchema.u32, n);
    */
   static get u32(): BorshSchema<number> {
-    return BorshSchema.fromSchema('u32');
+    return BorshSchema.fromSchemaUnchecked('u32');
   }
 
   /**
@@ -82,7 +82,7 @@ export class BorshSchema<
    * const buffer = borshSerialize(BorshSchema.u64, n);
    */
   static get u64(): BorshSchema<bigint> {
-    return BorshSchema.fromSchema('u64');
+    return BorshSchema.fromSchemaUnchecked('u64');
   }
 
   /**
@@ -92,7 +92,7 @@ export class BorshSchema<
    * const buffer = borshSerialize(BorshSchema.u128, n);
    */
   static get u128(): BorshSchema<bigint> {
-    return BorshSchema.fromSchema('u128');
+    return BorshSchema.fromSchemaUnchecked('u128');
   }
 
   /**
@@ -102,7 +102,7 @@ export class BorshSchema<
    * const buffer = borshSerialize(BorshSchema.i8, n);
    */
   static get i8(): BorshSchema<number> {
-    return BorshSchema.fromSchema('i8');
+    return BorshSchema.fromSchemaUnchecked('i8');
   }
 
   /**
@@ -112,7 +112,7 @@ export class BorshSchema<
    * const buffer = borshSerialize(BorshSchema.i16, n);
    */
   static get i16(): BorshSchema<number> {
-    return BorshSchema.fromSchema('i16');
+    return BorshSchema.fromSchemaUnchecked('i16');
   }
 
   /**
@@ -122,7 +122,7 @@ export class BorshSchema<
    * const buffer = borshSerialize(BorshSchema.i32, n);
    */
   static get i32(): BorshSchema<number> {
-    return BorshSchema.fromSchema('i32');
+    return BorshSchema.fromSchemaUnchecked('i32');
   }
 
   /**
@@ -132,7 +132,7 @@ export class BorshSchema<
    * const buffer = borshSerialize(BorshSchema.i64, n);
    */
   static get i64(): BorshSchema<bigint> {
-    return BorshSchema.fromSchema('i64');
+    return BorshSchema.fromSchemaUnchecked('i64');
   }
 
   /**
@@ -142,7 +142,7 @@ export class BorshSchema<
    * const buffer = borshSerialize(BorshSchema.i128, n);
    */
   static get i128(): BorshSchema<bigint> {
-    return BorshSchema.fromSchema('i128');
+    return BorshSchema.fromSchemaUnchecked('i128');
   }
 
   /**
@@ -152,7 +152,7 @@ export class BorshSchema<
    * const buffer = borshSerialize(BorshSchema.f32, n);
    */
   static get f32(): BorshSchema<number> {
-    return BorshSchema.fromSchema('f32');
+    return BorshSchema.fromSchemaUnchecked('f32');
   }
 
   /**
@@ -162,7 +162,7 @@ export class BorshSchema<
    * const buffer = borshSerialize(BorshSchema.f64, n);
    */
   static get f64(): BorshSchema<number> {
-    return BorshSchema.fromSchema('f64');
+    return BorshSchema.fromSchemaUnchecked('f64');
   }
 
   /**
@@ -172,7 +172,7 @@ export class BorshSchema<
    * const buffer = borshSerialize(BorshSchema.bool, b);
    */
   static get bool(): BorshSchema<boolean> {
-    return BorshSchema.fromSchema('bool');
+    return BorshSchema.fromSchemaUnchecked('bool');
   }
 
   /**
@@ -182,7 +182,7 @@ export class BorshSchema<
    * const buffer = borshSerialize(BorshSchema.String, message);
    */
   static get String(): BorshSchema<string> {
-    return BorshSchema.fromSchema('string');
+    return BorshSchema.fromSchemaUnchecked('string');
   }
 
   /**
@@ -197,7 +197,7 @@ export class BorshSchema<
    * const noneBuffer = borshSerialize(schema, none);
    */
   static Option<T>(value: BorshSchema<T>): BorshSchema<T | null> {
-    return BorshSchema.fromSchema({ option: value.toSchema() });
+    return BorshSchema.fromSchemaUnchecked({ option: value.toSchema() });
   }
 
   /**
@@ -208,7 +208,7 @@ export class BorshSchema<
    * const buffer = borshSerialize(schema, messages);
    */
   static Array<T>(value: BorshSchema<T>, length: number): BorshSchema<T[]> {
-    return BorshSchema.fromSchema({
+    return BorshSchema.fromSchemaUnchecked({
       array: { type: value.toSchema(), len: length },
     });
   }
@@ -221,7 +221,9 @@ export class BorshSchema<
    * const buffer = borshSerialize(schema, messages);
    */
   static Vec<T>(value: BorshSchema<T>): BorshSchema<T[]> {
-    return BorshSchema.fromSchema({ array: { type: value.toSchema() } });
+    return BorshSchema.fromSchemaUnchecked({
+      array: { type: value.toSchema() },
+    });
   }
 
   /**
@@ -232,7 +234,7 @@ export class BorshSchema<
    * const buffer = borshSerialize(schema, messages);
    */
   static HashSet<T>(value: BorshSchema<T>): BorshSchema<Set<T>> {
-    return BorshSchema.fromSchema({ set: value.toSchema() });
+    return BorshSchema.fromSchemaUnchecked({ set: value.toSchema() });
   }
 
   /**
@@ -249,7 +251,7 @@ export class BorshSchema<
     key: BorshSchema<K>,
     value: BorshSchema<V>,
   ): BorshSchema<Map<K, V>> {
-    return BorshSchema.fromSchema({
+    return BorshSchema.fromSchemaUnchecked({
       map: { key: key.toSchema(), value: value.toSchema() },
     });
   }
@@ -290,7 +292,7 @@ export class BorshSchema<
     fields: Fields,
   ): BorshSchema<InferStruct<Fields>> {
     const schema = BorshSchema.parseStructSchema(fields);
-    return BorshSchema.fromSchema(schema);
+    return BorshSchema.fromSchemaUnchecked(schema);
   }
 
   /**
@@ -361,7 +363,7 @@ export class BorshSchema<
     variants: Variants,
   ): BorshSchema<InferEnum<Variants>> {
     const schema = BorshSchema.parseEnumSchema(variants);
-    return BorshSchema.fromSchema(schema);
+    return BorshSchema.fromSchemaUnchecked(schema);
   }
 }
 
