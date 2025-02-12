@@ -170,15 +170,15 @@ test('Unit', () => {
 });
 
 test('Struct', () => {
-  type Person = {
-    name: string;
-    age: number;
-  };
-
   const schema = BorshSchema.Struct({
     name: BorshSchema.String,
     age: BorshSchema.u8,
   });
+
+  type Person = {
+    name: string;
+    age: number;
+  };
 
   const person: Person = {
     name: 'alice',
@@ -192,6 +192,12 @@ test('Struct', () => {
 });
 
 test('Enum', () => {
+  const schema = BorshSchema.Enum({
+    Pending: BorshSchema.Unit,
+    Fulfilled: BorshSchema.Unit,
+    Rejected: BorshSchema.Unit,
+  });
+
   type Status =
     | {
         Pending: Unit;
@@ -202,12 +208,6 @@ test('Enum', () => {
     | {
         Rejected: Unit;
       };
-
-  const schema = BorshSchema.Enum({
-    Pending: BorshSchema.Unit,
-    Fulfilled: BorshSchema.Unit,
-    Rejected: BorshSchema.Unit,
-  });
 
   const status: Status = {
     Pending: {},
@@ -220,6 +220,17 @@ test('Enum', () => {
 });
 
 test('Enum Associated', () => {
+  const schema = BorshSchema.Enum({
+    Square: BorshSchema.u32,
+    Rectangle: BorshSchema.Struct({
+      length: BorshSchema.u32,
+      width: BorshSchema.u32,
+    }),
+    Circle: BorshSchema.Struct({
+      radius: BorshSchema.u32,
+    }),
+  });
+
   type Shape =
     | {
         Square: number;
@@ -235,17 +246,6 @@ test('Enum Associated', () => {
           radius: number;
         };
       };
-
-  const schema = BorshSchema.Enum({
-    Square: BorshSchema.u32,
-    Rectangle: BorshSchema.Struct({
-      length: BorshSchema.u32,
-      width: BorshSchema.u32,
-    }),
-    Circle: BorshSchema.Struct({
-      radius: BorshSchema.u32,
-    }),
-  });
 
   const shape: Shape = {
     Square: 5,
