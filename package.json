@@ -1,6 +1,6 @@
 {
   "name": "borsher",
-  "version": "3.6.0",
+  "version": "4.0.0",
   "license": "MIT",
   "description": "Borsh (de)serialization",
   "main": "dist/index.js",
