@@ -1,4 +1,10 @@
-import { borshSerialize, borshDeserialize, BorshSchema, Unit } from '../src';
+import {
+  borshSerialize,
+  borshDeserialize,
+  BorshSchema,
+  Infer,
+  Unit,
+} from '../src';
 
 test('u8', () => {
   const schema = BorshSchema.u8;
@@ -170,15 +176,17 @@ test('Unit', () => {
 });
 
 test('Struct', () => {
-  type Person = {
-    name: string;
-    age: number;
-  };
-
   const schema = BorshSchema.Struct({
     name: BorshSchema.String,
     age: BorshSchema.u8,
   });
+
+  type Person = Infer<typeof schema>;
+
+  // type Person = {
+  //   name: string;
+  //   age: number;
+  // };
 
   const person: Person = {
     name: 'alice',
@@ -191,23 +199,25 @@ test('Struct', () => {
   expect(person).toEqual(deserialized);
 });
 
-test('Enum Without Associated Type', () => {
-  type Status =
-    | {
-        Pending: Unit;
-      }
-    | {
-        Fulfilled: Unit;
-      }
-    | {
-        Rejected: Unit;
-      };
-
+test('Enum', () => {
   const schema = BorshSchema.Enum({
     Pending: BorshSchema.Unit,
     Fulfilled: BorshSchema.Unit,
     Rejected: BorshSchema.Unit,
   });
+
+  type Status = Infer<typeof schema>;
+
+  // type Status =
+  //   | {
+  //       Pending: Unit;
+  //     }
+  //   | {
+  //       Fulfilled: Unit;
+  //     }
+  //   | {
+  //       Rejected: Unit;
+  //     };
 
   const status: Status = {
     Pending: {},
@@ -219,23 +229,7 @@ test('Enum Without Associated Type', () => {
   expect(status).toEqual(deserialized);
 });
 
-test('Enum With Associated Type', () => {
-  type Shape =
-    | {
-        Square: number;
-      }
-    | {
-        Rectangle: {
-          length: number;
-          width: number;
-        };
-      }
-    | {
-        Circle: {
-          radius: number;
-        };
-      };
-
+test('Enum Associated', () => {
   const schema = BorshSchema.Enum({
     Square: BorshSchema.u32,
     Rectangle: BorshSchema.Struct({
@@ -246,6 +240,24 @@ test('Enum With Associated Type', () => {
       radius: BorshSchema.u32,
     }),
   });
+
+  type Shape = Infer<typeof schema>;
+
+  // type Shape =
+  //   | {
+  //       Square: number;
+  //     }
+  //   | {
+  //       Rectangle: {
+  //         length: number;
+  //         width: number;
+  //       };
+  //     }
+  //   | {
+  //       Circle: {
+  //         radius: number;
+  //       };
+  //     };
 
   const shape: Shape = {
     Square: 5,

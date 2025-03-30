@@ -1,186 +1,183 @@
 import { Buffer } from 'buffer';
-import { Schema, serialize, deserialize } from 'borsh';
+import * as borsh from 'borsh';
 
-export class BorshSchema {
-  private readonly schema: Schema;
+export class BorshSchema<T> {
+  private readonly schema: borsh.Schema;
 
-  private constructor(schema: Schema) {
+  private constructor(schema: borsh.Schema) {
     this.schema = schema;
   }
 
-  private static fromSchema(schema: Schema): BorshSchema {
+  private static fromSchemaUnchecked<T>(schema: borsh.Schema): BorshSchema<T> {
     return new BorshSchema(schema);
   }
 
-  private toSchema(): Schema {
+  private toSchema(): borsh.Schema {
     return this.schema;
   }
 
-  private static parseStructSchema(fields: StructFields): Schema {
-    const entries = Object.entries(fields).map<[string, Schema]>(
-      ([key, value]) => [key, value.toSchema()],
-    );
-    return {
-      struct: Object.fromEntries(entries),
-    };
-  }
-
-  private static parseEnumSchema(variants: EnumVariants): Schema {
-    return {
-      enum: Object.entries(variants).map(([key, value]) => ({
-        struct: { [key]: value.toSchema() },
-      })),
-    };
-  }
-
-  static serialize<T>(schema: BorshSchema, value: T): Buffer {
-    const buffer = serialize(schema.toSchema(), value);
+  serialize(value: T): Buffer {
+    const buffer = borsh.serialize(this.toSchema(), value);
     return Buffer.from(buffer);
   }
 
-  static deserialize<T>(schema: BorshSchema, buffer: Uint8Array): T {
-    const value = deserialize(schema.toSchema(), buffer);
+  deserialize(buffer: Uint8Array): T {
+    const value = borsh.deserialize(this.toSchema(), buffer);
     return value as T;
   }
 
   /**
    * Schema for u8
    * @example
+   * const schema = BorshSchema.u8;
    * const n: number = 100;
-   * const buffer = borshSerialize(BorshSchema.u8, n);
+   * const buffer = schema.serialize(n);
    */
-  static get u8(): BorshSchema {
-    return BorshSchema.fromSchema('u8');
+  static get u8(): BorshSchema<number> {
+    return BorshSchema.fromSchemaUnchecked('u8');
   }
 
   /**
    * Schema for u16
    * @example
+   * const schema = BorshSchema.u16;
    * const n: number = 100;
-   * const buffer = borshSerialize(BorshSchema.u16, n);
+   * const buffer = schema.serialize(n);
    */
-  static get u16(): BorshSchema {
-    return BorshSchema.fromSchema('u16');
+  static get u16(): BorshSchema<number> {
+    return BorshSchema.fromSchemaUnchecked('u16');
   }
 
   /**
    * Schema for u32
    * @example
+   * const schema = BorshSchema.u32;
    * const n: number = 100;
-   * const buffer = borshSerialize(BorshSchema.u32, n);
+   * const buffer = schema.serialize(n);
    */
-  static get u32(): BorshSchema {
-    return BorshSchema.fromSchema('u32');
+  static get u32(): BorshSchema<number> {
+    return BorshSchema.fromSchemaUnchecked('u32');
   }
 
   /**
    * Schema for u64
    * @example
+   * const schema = BorshSchema.u64;
    * const n: bigint = 100n;
-   * const buffer = borshSerialize(BorshSchema.u64, n);
+   * const buffer = schema.serialize(n);
    */
-  static get u64(): BorshSchema {
-    return BorshSchema.fromSchema('u64');
+  static get u64(): BorshSchema<bigint> {
+    return BorshSchema.fromSchemaUnchecked('u64');
   }
 
   /**
    * Schema for u128
    * @example
+   * const schema = BorshSchema.u128;
    * const n: bigint = 100n;
-   * const buffer = borshSerialize(BorshSchema.u128, n);
+   * const buffer = schema.serialize(n);
    */
-  static get u128(): BorshSchema {
-    return BorshSchema.fromSchema('u128');
+  static get u128(): BorshSchema<bigint> {
+    return BorshSchema.fromSchemaUnchecked('u128');
   }
 
   /**
    * Schema for i8
    * @example
+   * const schema = BorshSchema.i8;
    * const n: number = 100;
-   * const buffer = borshSerialize(BorshSchema.i8, n);
+   * const buffer = schema.serialize(n);
    */
-  static get i8(): BorshSchema {
-    return BorshSchema.fromSchema('i8');
+  static get i8(): BorshSchema<number> {
+    return BorshSchema.fromSchemaUnchecked('i8');
   }
 
   /**
    * Schema for i16
    * @example
+   * const schema = BorshSchema.i16;
    * const n: number = 100;
-   * const buffer = borshSerialize(BorshSchema.i16, n);
+   * const buffer = schema.serialize(n);
    */
-  static get i16(): BorshSchema {
-    return BorshSchema.fromSchema('i16');
+  static get i16(): BorshSchema<number> {
+    return BorshSchema.fromSchemaUnchecked('i16');
   }
 
   /**
    * Schema for i32
    * @example
+   * const schema = BorshSchema.i32;
    * const n: number = 100;
-   * const buffer = borshSerialize(BorshSchema.i32, n);
+   * const buffer = schema.serialize(n);
    */
-  static get i32(): BorshSchema {
-    return BorshSchema.fromSchema('i32');
+  static get i32(): BorshSchema<number> {
+    return BorshSchema.fromSchemaUnchecked('i32');
   }
 
   /**
    * Schema for i64
    * @example
+   * const schema = BorshSchema.i64;
    * const n: bigint = 100n;
-   * const buffer = borshSerialize(BorshSchema.i64, n);
+   * const buffer = schema.serialize(n);
    */
-  static get i64(): BorshSchema {
-    return BorshSchema.fromSchema('i64');
+  static get i64(): BorshSchema<bigint> {
+    return BorshSchema.fromSchemaUnchecked('i64');
   }
 
   /**
    * Schema for i128
    * @example
+   * const schema = BorshSchema.i128;
    * const n: bigint = 100n;
-   * const buffer = borshSerialize(BorshSchema.i128, n);
+   * const buffer = schema.serialize(n);
    */
-  static get i128(): BorshSchema {
-    return BorshSchema.fromSchema('i128');
+  static get i128(): BorshSchema<bigint> {
+    return BorshSchema.fromSchemaUnchecked('i128');
   }
 
   /**
    * Schema for f32
    * @example
+   * const schema = BorshSchema.f32;
    * const n: number = 1.0;
-   * const buffer = borshSerialize(BorshSchema.f32, n);
+   * const buffer = schema.serialize(n);
    */
-  static get f32(): BorshSchema {
-    return BorshSchema.fromSchema('f32');
+  static get f32(): BorshSchema<number> {
+    return BorshSchema.fromSchemaUnchecked('f32');
   }
 
   /**
    * Schema for f64
    * @example
+   * const schema = BorshSchema.f64;
    * const n: number = 1.0;
-   * const buffer = borshSerialize(BorshSchema.f64, n);
+   * const buffer = schema.serialize(n);
    */
-  static get f64(): BorshSchema {
-    return BorshSchema.fromSchema('f64');
+  static get f64(): BorshSchema<number> {
+    return BorshSchema.fromSchemaUnchecked('f64');
   }
 
   /**
    * Schema for bool
    * @example
+   * const schema = BorshSchema.bool;
    * const b: boolean = true;
-   * const buffer = borshSerialize(BorshSchema.bool, b);
+   * const buffer = schema.serialize(b);
    */
-  static get bool(): BorshSchema {
-    return BorshSchema.fromSchema('bool');
+  static get bool(): BorshSchema<boolean> {
+    return BorshSchema.fromSchemaUnchecked('bool');
   }
 
   /**
    * Schema for String
    * @example
+   * const schema = BorshSchema.String;
    * const message: string = 'hello world';
-   * const buffer = borshSerialize(BorshSchema.String, message);
+   * const buffer = schema.serialize(message);
    */
-  static get String(): BorshSchema {
-    return BorshSchema.fromSchema('string');
+  static get String(): BorshSchema<string> {
+    return BorshSchema.fromSchemaUnchecked('string');
   }
 
   /**
@@ -189,13 +186,13 @@ export class BorshSchema {
    * const schema = BorshSchema.Option(BorshSchema.String);
    *
    * const some: string | null = 'hello world';
-   * const someBuffer = borshSerialize(schema, some);
+   * const someBuffer = schema.serialize(some);
    *
    * const none: string | null = null;
-   * const noneBuffer = borshSerialize(schema, none);
+   * const noneBuffer = schema.serialize(none);
    */
-  static Option(value: BorshSchema): BorshSchema {
-    return BorshSchema.fromSchema({ option: value.toSchema() });
+  static Option<T>(value: BorshSchema<T>): BorshSchema<T | null> {
+    return BorshSchema.fromSchemaUnchecked({ option: value.toSchema() });
   }
 
   /**
@@ -203,10 +200,10 @@ export class BorshSchema {
    * @example
    * const schema = BorshSchema.Array(BorshSchema.String, 2);
    * const messages: string[] = ['hello', 'world'];
-   * const buffer = borshSerialize(schema, messages);
+   * const buffer = schema.serialize(messages);
    */
-  static Array(value: BorshSchema, length: number): BorshSchema {
-    return BorshSchema.fromSchema({
+  static Array<T>(value: BorshSchema<T>, length: number): BorshSchema<T[]> {
+    return BorshSchema.fromSchemaUnchecked({
       array: { type: value.toSchema(), len: length },
     });
   }
@@ -216,10 +213,12 @@ export class BorshSchema {
    * @example
    * const schema = BorshSchema.Vec(BorshSchema.String);
    * const messages: string[] = ['hello', 'world'];
-   * const buffer = borshSerialize(schema, messages);
+   * const buffer = schema.serialize(messages);
    */
-  static Vec(value: BorshSchema): BorshSchema {
-    return BorshSchema.fromSchema({ array: { type: value.toSchema() } });
+  static Vec<T>(value: BorshSchema<T>): BorshSchema<T[]> {
+    return BorshSchema.fromSchemaUnchecked({
+      array: { type: value.toSchema() },
+    });
   }
 
   /**
@@ -227,10 +226,10 @@ export class BorshSchema {
    * @example
    * const schema = BorshSchema.HashSet(BorshSchema.String);
    * const messages: Set<string> = new Set(['hello', 'world']);
-   * const buffer = borshSerialize(schema, messages);
+   * const buffer = schema.serialize(messages);
    */
-  static HashSet(value: BorshSchema): BorshSchema {
-    return BorshSchema.fromSchema({ set: value.toSchema() });
+  static HashSet<T>(value: BorshSchema<T>): BorshSchema<Set<T>> {
+    return BorshSchema.fromSchemaUnchecked({ set: value.toSchema() });
   }
 
   /**
@@ -241,10 +240,13 @@ export class BorshSchema {
    *   ['alice', 1_000_000_000_000_000_000_000_000n],
    *   ['bob', 2_000_000_000_000_000_000_000_000n],
    * ]);
-   * const buffer = borshSerialize(schema, balances);
+   * const buffer = schema.serialize(balances);
    */
-  static HashMap(key: BorshSchema, value: BorshSchema): BorshSchema {
-    return BorshSchema.fromSchema({
+  static HashMap<K, V>(
+    key: BorshSchema<K>,
+    value: BorshSchema<V>,
+  ): BorshSchema<Map<K, V>> {
+    return BorshSchema.fromSchemaUnchecked({
       map: { key: key.toSchema(), value: value.toSchema() },
     });
   }
@@ -252,81 +254,72 @@ export class BorshSchema {
   /**
    * Schema for Unit
    * @example
+   * const schema = BorshSchema.Unit;
    * const unit: Unit = {};
-   * const buffer = borshSerialize(BorshSchema.Unit, unit);
+   * const buffer = schema.serialize(unit);
    */
-  static get Unit(): BorshSchema {
+  static get Unit(): BorshSchema<Unit> {
     return BorshSchema.Struct({});
   }
 
   /**
    * Schema for Struct
    * @example
-   * type Person = {
-   *   name: string;
-   *   age: number;
-   * };
-   *
    * const schema = BorshSchema.Struct({
    *   name: BorshSchema.String,
    *   age: BorshSchema.u8,
    * });
+   *
+   * type Person = Infer<typeof schema>;
+   *
+   * // type Person = {
+   * //   name: string;
+   * //   age: number;
+   * // };
    *
    * const person: Person = {
    *   name: 'alice',
    *   age: 18,
    * };
    *
-   * const buffer = borshSerialize(schema, person);
+   * const buffer = schema.serialize(person);
    */
-  static Struct(fields: StructFields): BorshSchema {
+  static Struct<Fields extends StructFields>(
+    fields: Fields,
+  ): BorshSchema<InferStruct<Fields>> {
     const schema = BorshSchema.parseStructSchema(fields);
-    return BorshSchema.fromSchema(schema);
+    return BorshSchema.fromSchemaUnchecked(schema);
   }
 
   /**
    * Schema for Enum
    * @example
-   * type Status =
-   *   | {
-   *       Pending: Unit;
-   *     }
-   *   | {
-   *       Fulfilled: Unit;
-   *     }
-   *   | {
-   *       Rejected: Unit;
-   *     };
-   *
    * const schema = BorshSchema.Enum({
    *   Pending: BorshSchema.Unit,
    *   Fulfilled: BorshSchema.Unit,
    *   Rejected: BorshSchema.Unit,
    * });
    *
+   * type Status = Infer<typeof schema>;
+   *
+   * // type Status =
+   * //   | {
+   * //   Pending: Unit;
+   * // }
+   * //   | {
+   * //   Fulfilled: Unit;
+   * // }
+   * //   | {
+   * //   Rejected: Unit;
+   * // };
+   *
    * const status: Status = {
    *   Pending: {},
    * };
    *
-   * const buffer = borshSerialize(schema, status);
+   * const buffer = schema.serialize(status);
    *
    * @example
-   * type Shape =
-   *   | {
-   *       Square: number;
-   *     }
-   *   | {
-   *       Rectangle: {
-   *         length: number;
-   *         width: number;
-   *       };
-   *     }
-   *   | {
-   *       Circle: {
-   *         radius: number;
-   *       };
-   *     };
-   *
    * const schema = BorshSchema.Enum({
    *   Square: BorshSchema.u32,
    *   Rectangle: BorshSchema.Struct({
@@ -338,20 +331,75 @@ export class BorshSchema {
    *   }),
    * });
    *
+   * type Shape = Infer<typeof schema>;
+   *
+   * // type Shape =
+   * //   | {
+   * //   Square: number;
+   * // }
+   * //   | {
+   * //   Rectangle: {
+   * //     length: number;
+   * //     width: number;
+   * //   };
+   * // }
+   * //   | {
+   * //   Circle: {
+   * //     radius: number;
+   * //   };
+   * // };
+   *
    * const shape: Shape = {
    *   Square: 5,
    * };
    *
-   * const buffer = borshSerialize(schema, shape);
+   * const buffer = schema.serialize(shape);
    */
-  static Enum(variants: EnumVariants): BorshSchema {
+  static Enum<Variants extends EnumVariants>(
+    variants: Variants,
+  ): BorshSchema<InferEnum<Variants>> {
     const schema = BorshSchema.parseEnumSchema(variants);
-    return BorshSchema.fromSchema(schema);
+    return BorshSchema.fromSchemaUnchecked(schema);
+  }
+
+  private static parseStructSchema<Fields extends StructFields>(
+    fields: Fields,
+  ): borsh.Schema {
+    const entries = Object.entries(fields).map<[string, borsh.Schema]>(
+      ([key, value]) => [key, value.toSchema()],
+    );
+    return {
+      struct: Object.fromEntries(entries),
+    };
+  }
+
+  private static parseEnumSchema<Variants extends EnumVariants>(
+    variants: Variants,
+  ): borsh.Schema {
+    return {
+      enum: Object.entries(variants).map(([key, value]) => ({
+        struct: { [key]: value.toSchema() },
+      })),
+    };
   }
 }
 
-export type StructFields = Record<string, BorshSchema>;
+type StructFields = Record<string, BorshSchema<unknown>>;
 
-export type EnumVariants = Record<string, BorshSchema>;
+type EnumVariants = Record<string, BorshSchema<unknown>>;
+
+export type Infer<S> = S extends BorshSchema<infer T> ? T : never;
+
+type InferStruct<Fields> = Fields extends StructFields
+  ? {
+      [K in keyof Fields]: Infer<Fields[K]>;
+    }
+  : never;
+
+type InferEnum<Variants> = Variants extends EnumVariants
+  ? {
+      [K in keyof Variants]: { [P in K]: Infer<Variants[P]> };
+    }[keyof Variants]
+  : never;
 
 export type Unit = Record<string, never>;
