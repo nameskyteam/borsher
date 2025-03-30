@@ -13,8 +13,8 @@
     "build": "rm -rf dist && tsc",
     "check": "tsc --noEmit",
     "test": "jest",
-    "lint": "eslint '{src,test}/**/*.ts' '*.js' --fix",
-    "prettier": "prettier '{src,test}/**/*.ts' '*.js' --write --list-different",
+    "lint": "eslint '{src,test}/**/*.ts' '*.mjs' --fix",
+    "prettier": "prettier '{src,test}/**/*.ts' '*.mjs' --write --list-different",
     "prepare": "husky"
   },
   "dependencies": {
@@ -22,16 +22,16 @@
     "buffer": "^6.0.3"
   },
   "devDependencies": {
+    "@eslint/js": "^9.23.0",
     "@types/jest": "^29.5.13",
     "@types/node": "^20.17.12",
-    "@typescript-eslint/eslint-plugin": "^7.18.0",
-    "@typescript-eslint/parser": "^7.18.0",
-    "eslint": "^8.57.1",
+    "eslint": "^9.23.0",
     "husky": "^9.1.6",
     "jest": "^29.7.0",
     "lint-staged": "^15.2.10",
     "prettier": "^3.3.3",
     "ts-jest": "^29.2.5",
-    "typescript": "^5.7.3"
+    "typescript": "^5.7.3",
+    "typescript-eslint": "^8.28.0"
   }
 }
